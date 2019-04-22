@@ -1,0 +1,10 @@
+{
+  "name": "ds-awards-theme",
+  "version": "1.0.0",
+  "main": "src",
+  "license": "MIT",
+  "dependencies": {
+    "@pubsweet/ui-toolkit": "^2.0.0",
+    "styled-components": "4.1.3"
+  }
+}

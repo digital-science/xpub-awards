@@ -1,0 +1,7 @@
+{
+  "name": "component-authentication",
+  "version": "0.0.1",
+  "dependencies": {
+    "@pubsweet/model-user": "^3.0.2"
+  }
+}
