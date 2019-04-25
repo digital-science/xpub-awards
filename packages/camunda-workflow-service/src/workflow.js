@@ -1,9 +1,12 @@
 const CamSDK = require('camunda-bpm-sdk-js');
 const config = require('config');
 
-module.exports = {
-    client: new CamSDK.Client({
-        mock: false,
-        apiUri: config.workflow.apiUri
-    })
-};
+const camClient = new CamSDK.Client({
+    mock: false,
+    apiUri: config.workflow.apiUri
+});
+
+exports.client = camClient;
+exports.taskService = new camClient.resource('task');
+exports.processDefinitionService = new camClient.resource('process-definition');
+exports.processInstanceService = new camClient.resource('process-instance');

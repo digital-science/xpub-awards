@@ -52,6 +52,7 @@ module.exports = function generateTypeDefsForDefinition(definition) {
     mergeResolvers(resolvers, ModelAwardee.resolvers);
 
     return {
+        models: resAndModels.models,
         typeDefs: tasks.join("\n\n") + taskUnion + "\n\n\n" + models.join("\n\n") + "\n\n\n" + enums.join("\n\n") + staticContent,
         resolvers: mergeResolvers(resolvers, resAndModels.resolvers),
     };
