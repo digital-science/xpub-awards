@@ -95,6 +95,10 @@ function createModelForTask(task, enums, lookupModel) {
                     enum: values
                 }
             };
+
+        } else if(element.array !== true && element.joinField) {
+
+            return {key:element.joinField, value:{type:['string', 'null'], format:'uuid'}};
         }
 
         return null;
@@ -132,18 +136,32 @@ function createModelForTask(task, enums, lookupModel) {
 
                     if(e.array === true) {
 
-                        const joinTableName = `${tableName}-${_tableNameForEntityName(e.field)}`;
+                        if(e.joinToField) {
 
-                        mapping.relation = AwardsBaseModel.ManyToManyRelation;
-                        mapping.modelClass = lookupModel(e.type);
-                        mapping.join = {
-                            from: `${tableName}.id`,
-                            through: {
-                                from: `${joinTableName}.${_joinTableFieldNameForEntityName(task.name)}`,
-                                to: `${joinTableName}.${_joinTableFieldNameForEntityName(e.type)}`
-                            },
-                            to: `${destTableName}.id`
-                        };
+                            const joinTableName = `${tableName}-${_tableNameForEntityName(e.field)}`;
+
+                            mapping.relation = AwardsBaseModel.HasManyRelation;
+                            mapping.modelClass = lookupModel(e.type);
+                            mapping.join = {
+                                from: `${tableName}.id`,
+                                to: `${destTableName}.${e.joinToField}`
+                            };
+
+                        } else {
+
+                            const joinTableName = `${tableName}-${_tableNameForEntityName(e.field)}`;
+
+                            mapping.relation = AwardsBaseModel.ManyToManyRelation;
+                            mapping.modelClass = lookupModel(e.type);
+                            mapping.join = {
+                                from: `${tableName}.id`,
+                                through: {
+                                    from: `${joinTableName}.${_joinTableFieldNameForEntityName(task.name)}`,
+                                    to: `${joinTableName}.${_joinTableFieldNameForEntityName(e.type)}`
+                                },
+                                to: `${destTableName}.id`
+                            };
+                        }
 
                     } else {
 

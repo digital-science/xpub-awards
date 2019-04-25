@@ -441,7 +441,7 @@ modelElementAccessType
     	return (type === "rw" || type === "read-write") ? "read-write" : "read";
     }
 
-modelElementOptions = (modelElementExclusions / modelElementJoinDetails / modelElementAccessors)
+modelElementOptions = (modelElementExclusions / modelElementJoinToDetails / modelElementJoinDetails / modelElementAccessors)
 
 modelElementExclusions
 	= "input:" inputExclusion:("exclude" / "include")
@@ -475,6 +475,11 @@ modelElementJoinDetails
     	return {type:"options", joinField:field};
     }
 
+modelElementJoinToDetails
+	= "join-to-field:" field:string
+    {
+    	return {type:"options", joinToField:field};
+    }
 // ----- Form -----
 
 form
