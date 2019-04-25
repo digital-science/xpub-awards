@@ -3,9 +3,6 @@
     "es6": true,
     "browser": true
   },
-  "extends": [
-    "pubsweet"
-  ],
   "parser": "babel-eslint",
   "rules": {
     "camelcase": 0,

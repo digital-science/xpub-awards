@@ -19,7 +19,8 @@ const camClient = new CamSDK.Client({
 const processDefinitionService = new camClient.resource('process-definition');
 
 const processDefStartOptions = {
-    id: config.get('workflow.processDefinitionId')
+    //id: config.get('workflow.processDefinitionId')
+    key: "award-submission"
 };
 
 return processDefinitionService.start(processDefStartOptions).then((data) => {

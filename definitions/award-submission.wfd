@@ -3,11 +3,11 @@ task AwardSubmission {
     processKey: "award-submission"
 
     model+input {
-        award_type: AwardType,
-        citation: String,
-        awardees: [Awardee] <input:exclude>,
+        awardType: AwardType,
         date: DateTime,
-        files: [File] <input:exclude>
+        citation: String,
+        awardees: [Awardee] <input:exclude, set>,
+        files: [File] <input:exclude, set>
     }
 
     form "test" extend "anotherForm" {
@@ -37,17 +37,18 @@ task AwardSubmission {
 
 }
 
+
+task AwardeeAcceptance {
+
+    model+input <no-create> {
+        awardSubmission: AwardSubmission <input:exclude, join-field:"awardSubmissionId">,
+        awardee: Awardee <input:exclude, join-field:"awardeeId">,
+        comments: String
+    }
+}
+
 enum AwardType {
     NobelPrize,
     FieldsMedal
 }
 
-model "Awardee" {
-    first_name: String,
-    last_name: String,
-    email: String
-}
-
-model "File" {
-    file_name: String
-}

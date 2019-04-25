@@ -5,6 +5,7 @@ const parseEagerRelations = relations =>
     Array.isArray(relations) ? `[${relations.join(', ')}]` : relations;
 
 class AwardsBaseModel extends BaseModel {
+
     static async find(id, eagerLoadRelations) {
         const object = await this.query()
             .findById(id)

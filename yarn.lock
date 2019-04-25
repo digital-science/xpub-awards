@@ -1604,6 +1604,21 @@ aws-sdk@^2.185.0, aws-sdk@^2.293.0:
     uuid "3.3.2"
     xml2js "0.4.19"
 
+aws-sdk@^2.387.0:
+  version "2.442.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.442.0.tgz#2b6848bbdcb53d1e7f955a7c7149072192ca4195"
+  integrity sha512-1KWya47PNEKJiIRQ4l3B+31gSwfaxa+1ow/o8HMmUAQl7wM5SDotUz+v6y2e08R4sL3u7UN+DWMkhg1itpYZIQ==
+  dependencies:
+    buffer "4.9.1"
+    events "1.1.1"
+    ieee754 "1.1.8"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
 aws-sign2@~0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.7.0.tgz#b46e890934a9591f2d2f6f86d7e6a9f1b3fe76a8"
@@ -6723,6 +6738,11 @@ graphql-extensions@^0.0.x, graphql-extensions@~0.0.9:
   dependencies:
     core-js "^2.5.3"
     source-map-support "^0.5.1"
+
+graphql-fields@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/graphql-fields/-/graphql-fields-2.0.3.tgz#5e68dff7afbb202be4f4f40623e983b22c96ab8f"
+  integrity sha512-x3VE5lUcR4XCOxPIqaO4CE+bTK8u6gVouOdpQX9+EKHr+scqtK5Pp/l8nIGqIpN1TUlkKE6jDCCycm/WtLRAwA==
 
 graphql-postgres-subscriptions@^1.0.4:
   version "1.0.5"

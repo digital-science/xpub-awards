@@ -1,8 +1,11 @@
 /* For each task we need to create a new "Model" class instance. In addition to this, we also create the base set
-* of GraphQL endpoint resolvers. */
+ * of GraphQL endpoint resolvers. */
 
 const { AwardsBaseModel } = require('component-model');
 const { processDefinitionService, processInstanceService, taskService } = require('component-workflow/src/workflow');
+const { mergeResolvers, filterModelElementsForRelations } = require('./utils');
+const GraphQLFields = require('graphql-fields');
+const logger = require('@pubsweet/logger');
 
 
 /**/
@@ -26,8 +29,8 @@ exports.generateModelsAndResolvers = function generateModelsAndResolvers(tasks, 
     Object.assign(allModels, models);
 
     tasks.forEach(task => {
-        const r = createResolversForTask(task, models);
-        Object.assign(resolvers, r);
+        const r = createResolversForTask(task, enums, models);
+        mergeResolvers(resolvers, r);
     });
 
     return {models:allModels, resolvers};
@@ -39,11 +42,22 @@ exports.generateModelsAndResolvers = function generateModelsAndResolvers(tasks, 
 /**/
 exports.commonResolvers = {
     Mutation: {
-        completeTask: async function(ctxt, input) {
+        completeTask: async function(ctxt, {input}) {
             return completeTask(input);
         }
     }
 };
+
+
+function _tableNameForEntityName(name) {
+
+    return name.replace(/^(.)/g, (a) => a.toLowerCase()).replace(/([A-Z])/g, (a) => '-' + a.toLowerCase());
+}
+
+function _joinTableFieldNameForEntityName(name) {
+
+    return name.replace(/^(.)/g, (a) => a.toLowerCase()) + 'Id';
+}
 
 
 
@@ -54,7 +68,10 @@ function createModelForTask(task, enums, lookupModel) {
         return;
     }
 
-    const p = model.elements.map(element => {
+    const relations = filterModelElementsForRelations(model.elements, enums);
+    const props = model.elements.map(element => {
+
+        // FIXME: this should be more generalised into a generic lookup table or something of that sort of nature (this current impl smells a little)
 
         if(element.type === "String") {
             return {key:element.field, value:{type:['string', 'null']}};
@@ -62,13 +79,20 @@ function createModelForTask(task, enums, lookupModel) {
             return {key:element.field, value:{type:['integer', 'null']}};
         } else if(element.type === "ID") {
             return {key:element.field, value:{type:['string', 'null'], format:'uuid'}};
+        } else if(element.type === "DateTime") {
+            return {key:element.field, value:{type:['string', 'null'], format:'date-time'}};
         }
 
+        // See if the element type is defined as an enum and then use that as the defined type.
         if(enums.hasOwnProperty(element.type)) {
+            const values = enums[element.type].values.slice(0) || [];
+            values.push(null);
+
             return {
                 key:element.field,
                 value:{
-                    type:{ enum: enums[element.type].values }
+                    type: ['string', 'null'],
+                    enum: values
                 }
             };
         }
@@ -77,20 +101,69 @@ function createModelForTask(task, enums, lookupModel) {
 
     }).filter(e => !!e);
 
-    const tableName = task.name.replace(/^(.)/g, (a) => a.toLowerCase()).replace(/([A-Z])/g, (a) => '-' + a.toLowerCase());
+    const tableName = _tableNameForEntityName(task.name);
     const properties = {};
-    p.forEach(p => {
+    props.forEach(p => {
         properties[p.key] = p.value;
     });
 
     const createClass = (name, cls) => ({
         [name] : class extends cls {
+
             static get tableName() {
                 return tableName;
             }
 
             static get schema() {
-                return {type:'object', properties};
+                return {
+                    type:'object',
+                    properties
+                };
+            }
+
+            static get relationMappings() {
+
+                const r = {};
+
+                relations.forEach(e => {
+
+                    const mapping = {};
+                    const destTableName = _tableNameForEntityName(e.type);
+
+                    if(e.array === true) {
+
+                        const joinTableName = `${tableName}-${_tableNameForEntityName(e.field)}`;
+
+                        mapping.relation = AwardsBaseModel.ManyToManyRelation;
+                        mapping.modelClass = lookupModel(e.type);
+                        mapping.join = {
+                            from: `${tableName}.id`,
+                            through: {
+                                from: `${joinTableName}.${_joinTableFieldNameForEntityName(task.name)}`,
+                                to: `${joinTableName}.${_joinTableFieldNameForEntityName(e.type)}`
+                            },
+                            to: `${destTableName}.id`
+                        };
+
+                    } else {
+
+                        if(!e.joinField) {
+                            logger.warn(`Dynamic model ${task.name} has field element ${e.field} specified as a relationship (singular) but no 'join-field' specified.`);
+                            return;
+                        }
+
+                        mapping.relation = AwardsBaseModel.BelongsToOneRelation;
+                        mapping.modelClass = lookupModel(e.type);
+                        mapping.join = {
+                            from: `${tableName}.${e.joinField}`,
+                            to: `${destTableName}.id`
+                        };
+                    }
+
+                    r[e.field] = mapping;
+                });
+
+                return r;
             }
         }
     })[name];
@@ -100,40 +173,90 @@ function createModelForTask(task, enums, lookupModel) {
 
 
 
-function createResolversForTask(task, models) {
+function createResolversForTask(task, enums, models) {
 
     const ModelClass = models[task.name];
+    const relations = filterModelElementsForRelations(task.model.elements, enums);
+    const relationFields = (relations || []).map(e => e.field);
 
     const simpleCreate = async function _create() {
         return createInstanceWithModelClass(ModelClass, task);
     };
 
-    const simpleGet = async function _get(ctxt, input) {
-        return getInstanceForModelClass(ModelClass, task, input);
+    const simpleGet = async function _get(instance, args, context, info) {
+        // FIXME: attempt to determine eager relations we may also want to resolve here and now if they have been requested
+        console.log(`getInstanceForModelClass called ${task.name}`);
+        return getInstanceForModelClass(ModelClass, task, args, info, relationFields);
     };
 
     const simpleUpdate = async function(ctxt, input) {
         return updateInstanceWithModelClass(ModelClass, task, input);
     };
 
+    const allowCreate = !(task.model.noCreate === true);
 
     const mutation = {};
-    mutation[`create${task.name}`] = simpleCreate;
+    if(allowCreate) {
+        mutation[`create${task.name}`] = simpleCreate;
+    }
+    mutation[`update${task.name}`] = simpleUpdate;
 
     const query = {};
     query[`get${task.name}`] = simpleGet;
+
+    const fieldResolvers = {};
+    fieldResolvers.tasks = async function tasksResolver(obj) {
+        return getTasksForInstance(obj.id);
+    };
+
+    relations.forEach(element => {
+
+        fieldResolvers[element.field] = async (instance, args, context, info) => {
+
+            if(!instance) {
+                return null;
+            }
+
+            if (instance[element.field]) {
+                return Promise.resolve(instance[element.field]);
+            } else {
+                return instance.$relatedQuery(element.field);
+            }
+        };
+    });
+
+    const accessorElements = relations ? relations.filter(e => e.accessors && e.accessors.length) : null;
+    if(accessorElements && accessorElements.length) {
+
+        accessorElements.filter(e => e.accessors.indexOf("set") !== -1).forEach(e => {
+
+            let niceFieldName = e.field.charAt(0).toUpperCase() + e.field.slice(1);
+            const mutationName = `set${task.name}${niceFieldName}`;
+
+            mutation[mutationName] = async function(_, {id, linked}) {
+
+                const object = await ModelClass.find(id);
+                if(!object) {
+                    return false;
+                }
+
+                await object.$relatedQuery(e.field).unrelate();
+
+                if(linked && ((e.array === true && linked.length) || e.array === false)) {
+                    await object.$relatedQuery(e.field).relate(linked);
+                }
+
+                return true;
+            };
+        });
+    }
 
     const r = {
         Mutation: mutation,
         Query: query
     };
 
-    r[task.name] = {
-        tasks: async function tasksResolver(obj) {
-            return getTasksForInstance(obj.id);
-        }
-    };
-
+    r[task.name] = fieldResolvers;
     return r;
 }
 
@@ -141,45 +264,44 @@ function createResolversForTask(task, models) {
 
 async function createInstanceWithModelClass(ModelClass, task) {
 
-    console.log("creating new instance");
     const newInstance = new ModelClass({
         created: new Date().toISOString(),
         updated: new Date().toISOString(),
     });
 
-    console.log("saving new instance");
-
     await newInstance.save();
 
-    // now that we have an instance of the object, we can create the process instance as well
-
-    console.log("done creating new instance");
-
     const { processKey } = task.options;
-
     const createProcessOpts = {
         key: processKey,
         businessKey: newInstance.id
     };
 
     return processDefinitionService.start(createProcessOpts).then(data => {
-
-        console.log(JSON.stringify(data, null, 4));
         return newInstance;
     });
 }
 
 
-async function getInstanceForModelClass(ModelClass, task, input) {
+async function getInstanceForModelClass(ModelClass, task, input, info, relationFields) {
 
-    console.dir(input.id);
-    console.log("finding instance: " + input.id);
+    // We have a listing of fields which contain 'relations' to other fields. Take a look at what
+    // has been requested and then create a list of eager loading relation fields that we
+    // also want to resolve at the same time.
 
-    return await ModelClass.find(input.id);
+    const fieldsWithoutTypeName = GraphQLFields(info, {}, { excludedFields: ['__typename'] });
+    let eagerResolves = null;
+
+    if(relationFields && relationFields.length && fieldsWithoutTypeName) {
+        const topLevelFields = Object.keys(fieldsWithoutTypeName);
+        eagerResolves = relationFields.filter(f => topLevelFields.indexOf(f) !== -1);
+    }
+
+    return await ModelClass.find(input.id, eagerResolves);
 }
 
 
-async function updateInstanceWithModelClass(ModelClass, task, input) {
+async function updateInstanceWithModelClass(ModelClass, task, {input}) {
 
     const modelDef = task.model;
     if(task.model.input !== true) {
@@ -190,28 +312,49 @@ async function updateInstanceWithModelClass(ModelClass, task, input) {
 
     delete input.id;
 
-    const allowedKeys =
+    // Create a listing of fields that can be updated, then we apply the update to the model object
+    // provided that it is within the list of allowed fields.
 
+    const allowedFields = _allowedInputKeysForModelUpdateInput(modelDef);
 
+    Object.keys(input).forEach(key => {
+        if(allowedFields.hasOwnProperty(key)) {
+            object[key] = input[key];
+        }
+    });
+
+    await object.save();
+    return true;
 }
 
 
 function _allowedInputKeysForModelUpdateInput(model) {
 
-    // For the model definition we want to determine the allowed input types.
-    ///
-    
+    // For the model definition we want to determine the allowed input fields.
+
+    const allowedInputFields = {};
+
+    model.elements.forEach(e => {
+        if(e.field && e.input !== false) {
+            allowedInputFields[e.field] = e;
+        }
+    });
+
+    return allowedInputFields;
 }
 
 
 
 async function getTasksForInstance(instanceID) {
 
+    // From the business process engine fetch all the tasks that are currently associated with
+    // the provided object identifier.
+
+    // FIXME: security and filtering will need to be applied here to ensure the user has access rights to view the instanceID in the first instance
+
     const taskOpts = {processInstanceBusinessKey:instanceID};
 
     return taskService.list(taskOpts).then((data) => {
-
-        console.log(JSON.stringify(data, null, 4));
 
         const tasks = data._embedded.tasks || data._embedded.task;
 
@@ -231,10 +374,19 @@ async function getTasksForInstance(instanceID) {
 
 
 
-async function completeTask(input) {
+async function completeTask({ taskId }) {
 
-    console.log("completeTask");
-    console.dir(input.taskId);
+    // Take the defined task identifier and mark the task as being completed within the business process engine.
 
-    // sdfsd
+    const taskOpts = {id: taskId};
+    return taskService.complete(taskOpts).then((data) => {
+
+        return true;
+
+    }).catch((err) => {
+
+        console.error("BPM engine request failed due to: " + err.toString());
+        return Promise.reject(new Error("Unable to complete task for instance due to business engine error."));
+    });
+
 }

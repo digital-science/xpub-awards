@@ -43,21 +43,6 @@
     "dsl-compile": "pegjs -o dsl/wfd-dsl.js dsl/wfd-dsl.pegjs",
     "desc": "node dsl/compile.js definitions/award-submission.wfd packages/app/config/description.json"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "ignore": [
-      "**/*.md$"
-    ],
-    "linters": {
-      "*.js": [
-        "yarn lint"
-      ]
-    }
-  },
   "engines": {
     "node": ">=8",
     "yarn": ">=1.12"

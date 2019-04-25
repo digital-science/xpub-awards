@@ -139,7 +139,7 @@ targetModelName "target model property name"
 
 
 // ----- Top Level -----
-topLevel = content:(task / model / enum)*
+topLevel = ws content:(task / model / enum)* ws
   {
   	    const m = {};
 
@@ -269,7 +269,7 @@ enumValue = ws value:propName ws { return value;  }
 // ----- Model -----
 
 model
-	= ws "model" ws isInput:("+" ws "input")? ws modelName:string? def:modelDefault? ws
+	= ws "model" ws isInput:("+" ws "input")? ws modelName:string? def:modelDefault? ws options:modelOptions? ws
     begin_object
     first:modelElement?
     rest:(ws "," ws e:modelElement {return e;})*
@@ -281,6 +281,9 @@ model
         }
         if(isInput) {
         	m.input = true;
+        }
+        if(options) {
+        	Object.assign(m, options);
         }
         if(first) {
         	m.elements = [first];
@@ -295,18 +298,21 @@ model
     }
 
 taskSpecificModel
-	= ws "model" ws isInput:("+" ws "input")? ws modelName:string?
+	= ws "model" ws isInput:("+" ws "input")? ws options:modelOptions? ws modelName:string?
     begin_object
     first:modelElement?
     rest:(ws "," ws e:modelElement {return e;})*
     end_object
     {
-    	var m = {type:"model", };
+    	var m = {type:"model"};
         if(modelName) {
         	m.name = modelName;
         }
         if(isInput) {
         	m.input = true;
+        }
+        if(options) {
+        	Object.assign(m, options);
         }
         if(first) {
         	m.elements = [first];
@@ -315,6 +321,30 @@ taskSpecificModel
             }
         }
         return m;
+    }
+
+modelOptions
+    = "<" ws first:modelAllOptions? rest:("," ws opt:modelAllOptions {return opt;})? ">"
+    {
+    	if(!first) {
+        	return null;
+        }
+        const opts = {};
+        Object.assign(opts, first);
+        if(rest && rest.length) {
+        	rest.forEach(r => {
+                Object.assign(opts, r);
+            });
+        }
+    	return opts;
+    }
+
+modelAllOptions = modelOptionNoCreate
+
+modelOptionNoCreate
+	= "no-create"
+    {
+    	return {noCreate:true};
     }
 
 modelDefault
@@ -411,7 +441,7 @@ modelElementAccessType
     	return (type === "rw" || type === "read-write") ? "read-write" : "read";
     }
 
-modelElementOptions = (modelElementExclusions / modelElementAccessors)
+modelElementOptions = (modelElementExclusions / modelElementJoinDetails / modelElementAccessors)
 
 modelElementExclusions
 	= "input:" inputExclusion:("exclude" / "include")
@@ -425,16 +455,24 @@ modelElementExclusions
     }
 
 modelElementAccessors
-	= accessors:("add" / "remove")
+	= accessors:("add" / "remove" / "set")
     {
     	const r = {type:"options"};
     	if(accessors === "add") {
         	r.accessors = ["add"];
         } else if(accessors === "remove") {
         	r.accessors = ["remove"];
+        } else if(accessors === "set") {
+        	r.accessors = ["set"];
         }
 
     	return r;
+    }
+
+modelElementJoinDetails
+	= "join-field:" field:string
+    {
+    	return {type:"options", joinField:field};
     }
 
 // ----- Form -----

@@ -3,6 +3,7 @@ const path = require('path');
 const logger = require('./loggerCustom');
 const components = require('./components.json');
 
+
 const getDbConfig = () => {
     if (process.env.DATABASE) {
         return {
@@ -20,7 +21,7 @@ const getDbConfig = () => {
 };
 
 module.exports = {
-    // Public keys are copiued into webpack build (i.e. go client-side)
+    // Public keys are copied into webpack build (i.e. go client-side)
     publicKeys: ['pubsweet-client', 'authsome', 'validations'],
 
     authsome: {
@@ -86,10 +87,14 @@ module.exports = {
     },
     workflow: {
         apiUri: 'http://127.0.0.1:8080/engine-rest',
-        processDefinitionId:
-            'award-submission:4:f94c89b6-5ad4-11e9-b0b9-0242ac110003',
         deploymentName: 'award-submission',
         deploymentFilesSource: './definitions',
         deploymentFiles: ['award-submission.bpmn']
+    },
+    'workflow-files': {
+        secretAccessKey: process.env.AWS_S3_SECRET_KEY,
+        accessKeyId: process.env.AWS_S3_ACCESS_KEY,
+        region: process.env.AWS_S3_REGION,
+        bucket: process.env.AWS_S3_BUCKET
     }
 };
