@@ -1,10 +1,12 @@
 const { generateModelsAndResolvers, commonResolvers } = require('./generate-models-resolvers');
 const { mergeResolvers, filterModelElementsForBasicTypes, filterModelElementsForRelations } = require('./utils');
+const GraphQLJSON = require('graphql-type-json');
+const path = require('path');
+const fs = require("fs");
+
 const ModelFile = require('./../shared-model/file');
 const ModelIdentity = require('./../shared-model/identity');
 const ModelAwardee = require('./../shared-model/awardee');
-const path = require('path');
-const fs = require("fs");
 const tab = "    ";
 
 
@@ -20,11 +22,14 @@ const staticContent = fs.readFileSync(path.join(__dirname, '../shared-model/shar
 
 module.exports = function generateTypeDefsForDefinition(definition) {
 
+    const resolvers = Object.assign({
+        JSON: GraphQLJSON
+    }, commonResolvers);
+
     let tasks = [];
     let taskUnion = '';
     let enums = [];
     let models = [];
-    const resolvers = Object.assign({}, commonResolvers);
 
     if(definition.tasks) {
         tasks = Object.values(definition.tasks).map(taskDef => generateTaskTypeDef(taskDef, definition.enums)).filter(v => !!v);
