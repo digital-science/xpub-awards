@@ -6,8 +6,9 @@ task AwardSubmission {
         awardType: AwardType,
         date: DateTime,
         citation: String,
-        awardees: [Awardee] <input:exclude, set>,
-        files: [File] <input:exclude, set>
+        awardees: [Awardee] <set>,
+        files: [File] <set>,
+        awardeeAcceptances: [AwardeeAcceptance] <join-to-field:"awardSubmissionId">
     }
 
     form "test" extend "anotherForm" {
@@ -41,8 +42,8 @@ task AwardSubmission {
 task AwardeeAcceptance {
 
     model+input <no-create> {
-        awardSubmission: AwardSubmission <input:exclude, join-field:"awardSubmissionId">,
-        awardee: Awardee <input:exclude, join-field:"awardeeId">,
+        awardSubmission: AwardSubmission <join-field:"awardSubmissionId">,
+        awardee: Awardee <join-field:"awardeeId">,
         comments: String
     }
 }
