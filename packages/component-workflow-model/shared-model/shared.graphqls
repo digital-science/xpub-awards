@@ -1,4 +1,5 @@
 scalar DateTime
+scalar JSON
 
 
 #
@@ -30,6 +31,12 @@ type Task {
 
 input CompleteTaskInput {
     taskId: ID!
+    variables: [CompleteTaskVariableInput]
+}
+
+input CompleteTaskVariableInput {
+    key: String
+    value: JSON
 }
 
 extend type Mutation {

@@ -2,7 +2,7 @@
  * of GraphQL endpoint resolvers. */
 
 const { AwardsBaseModel } = require('component-model');
-const { processDefinitionService, processInstanceService, taskService } = require('component-workflow/src/workflow');
+const { processDefinitionService, taskService } = require('camunda-workflow-service');
 const { mergeResolvers, filterModelElementsForRelations } = require('./utils');
 const GraphQLFields = require('graphql-fields');
 const logger = require('@pubsweet/logger');
@@ -392,11 +392,20 @@ async function getTasksForInstance(instanceID) {
 
 
 
-async function completeTask({ taskId }) {
+async function completeTask({ taskId, variables }) {
 
     // Take the defined task identifier and mark the task as being completed within the business process engine.
 
     const taskOpts = {id: taskId};
+
+    if(variables && variables.length) {
+        const newVars = {};
+        variables.filter(v => v.key).filter(v => (typeof(v.value) === "string" || typeof(v.value) === "number" || v.value === null)).forEach(value => {
+            newVars[value.key] = {value: value.value};
+        });
+        taskOpts.variables = newVars;
+    }
+    
     return taskService.complete(taskOpts).then((data) => {
 
         return true;
