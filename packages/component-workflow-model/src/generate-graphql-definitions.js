@@ -1,5 +1,7 @@
 const { generateModelsAndResolvers, commonResolvers } = require('./generate-models-resolvers');
-const { mergeResolvers, filterModelElementsForBasicTypes, filterModelElementsForRelations } = require('./utils');
+const { mergeResolvers, filterModelElementsForBasicTypes,
+    filterModelElementsForRelations, filterModelElementsForStates } = require('./utils');
+
 const GraphQLJSON = require('graphql-type-json');
 const path = require('path');
 const fs = require("fs");
@@ -38,6 +40,10 @@ module.exports = function generateTypeDefsForDefinition(definition) {
 
     if(definition.enums) {
         enums = Object.values(definition.enums).map(enumDef => generateTypeDefForEnum(enumDef));
+
+        Object.values(definition.enums).forEach(enumDef => {
+            resolvers[enumDef.name] = enumDef.values;
+        });
     }
 
     /*if(definition.models) {
@@ -73,12 +79,16 @@ function generateTaskTypeDef(taskDef, enums) {
 
     const relationElements = filterModelElementsForRelations(taskDef.model.elements, enums);
     const accessorElements = relationElements ? relationElements.filter(e => e.accessors && e.accessors.length) : [];
+    const stateElements = filterModelElementsForStates(taskDef.model.elements, enums);
 
     const modelTypeName = taskDef.name|| taskDef.model.name;
     const modelInputTypeName = `${modelTypeName}Input`;
+    const stateInputTypeName = `${modelTypeName}StateInput`;
 
     const model = generateTypeDefForModel(taskDef.model, taskDef.name, 'Object & WorkflowObject', baseObjectTypes, enums);
     const input = (taskDef.model.input === true) ? generateTypeDefForModelInput(taskDef.model, taskDef.name, baseObjectInputTypes, enums) : '';
+    const stateInput = (stateElements && stateElements.length) ? generateTypeDefForModelStateInput(taskDef.model, stateElements, taskDef.name, enums) : '';
+
     const query = `
 extend type Query {
     get${taskDef.name}(id:ID): ${modelTypeName}
@@ -90,12 +100,19 @@ extend type Mutation {
 `;
 
     if(!taskDef.model.hasOwnProperty('noCreate') || !(taskDef.model.noCreate === true)) {
-        mutation += tab + `create${taskDef.name}: ${modelTypeName}`;
+        mutation += tab + `create${taskDef.name}: ${modelTypeName}\n`;
     }
 
     if(taskDef.model.input) {
-        mutation += tab + `update${taskDef.name}(input:${modelInputTypeName}) : Boolean`;
+        mutation += tab + `update${taskDef.name}(input:${modelInputTypeName}) : Boolean\n`;
     }
+
+    if(stateElements && stateElements.length) {
+        mutation += tab + `completeTaskFor${taskDef.name}(id:ID, taskId:ID, state:${stateInputTypeName}) : Boolean\n`;
+    } else {
+        mutation += tab + `completeTaskFor${taskDef.name}(id:ID, taskId:ID) : Boolean\n`;
+    }
+
 
     if(accessorElements.length > 0) {
         const accessorMutations = accessorElements.map(e => {
@@ -118,7 +135,7 @@ extend type Mutation {
 
     mutation += "\n" + '}';
 
-    return model + "\n\n" + input + "\n" + query + "\n" + mutation;
+    return model + "\n\n" + input + "\n" + stateInput + "\n" + query + "\n" + mutation;
 }
 
 
@@ -170,7 +187,19 @@ ${elements.map(v => tab + v).join("\n")}
 function generateTypeDefForEnum(enumDef) {
 
     return `enum ${enumDef.name} {
-${enumDef.values.map(v => tab + v).join("\n")}
+${Object.keys(enumDef.values).map(v => tab + v).join("\n")}
+}`;
+
+}
+
+
+
+function generateTypeDefForModelStateInput(modelDef, stateElements, name, enums) {
+
+    const elements = _generateModelFieldsForElementsList(stateElements, enums);
+
+    return `input ${name || modelDef.name}StateInput {
+${elements.map(v => tab + v).join("\n")}
 }`;
 
 }

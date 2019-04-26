@@ -37,3 +37,12 @@ exports.filterModelElementsForBasicTypes = function _filterModelElementsForRelat
         return (BaseElementTypes.indexOf(element.type) !== -1 || enums.hasOwnProperty(element.type));
     });
 };
+
+
+
+exports.filterModelElementsForStates = function _filterModelElementsForStates(elements, enums) {
+
+    return elements.filter(element => {
+        return (element.state === true);
+    });
+};

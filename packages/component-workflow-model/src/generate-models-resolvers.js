@@ -3,9 +3,10 @@
 
 const { AwardsBaseModel } = require('component-model');
 const { processDefinitionService, taskService } = require('camunda-workflow-service');
-const { mergeResolvers, filterModelElementsForRelations } = require('./utils');
+const { mergeResolvers, filterModelElementsForRelations, filterModelElementsForStates } = require('./utils');
 const GraphQLFields = require('graphql-fields');
 const logger = require('@pubsweet/logger');
+const _ = require("lodash");
 
 
 /**/
@@ -85,7 +86,7 @@ function createModelForTask(task, enums, lookupModel) {
 
         // See if the element type is defined as an enum and then use that as the defined type.
         if(enums.hasOwnProperty(element.type)) {
-            const values = enums[element.type].values.slice(0) || [];
+            const values = Object.values(enums[element.type].values);
             values.push(null);
 
             return {
@@ -194,8 +195,10 @@ function createModelForTask(task, enums, lookupModel) {
 function createResolversForTask(task, enums, models) {
 
     const ModelClass = models[task.name];
+
     const relations = filterModelElementsForRelations(task.model.elements, enums);
     const relationFields = (relations || []).map(e => e.field);
+    const states = filterModelElementsForStates(task.model.elements, enums);
 
     const simpleCreate = async function _create() {
         return createInstanceWithModelClass(ModelClass, task);
@@ -269,6 +272,12 @@ function createResolversForTask(task, enums, models) {
         });
     }
 
+    const completeTaskMutationName = `completeTaskFor${task.name}`;
+    mutation[completeTaskMutationName] = async function(_, {id, taskId, state}) {
+
+        return completeTaskForInstance(ModelClass, states, id, taskId, state);
+    };
+
     const r = {
         Mutation: mutation,
         Query: query
@@ -286,6 +295,25 @@ async function createInstanceWithModelClass(ModelClass, task) {
         created: new Date().toISOString(),
         updated: new Date().toISOString(),
     });
+
+    if(task.model && task.model.elements) {
+
+        task.model.elements.forEach(e => {
+
+            if(e.defaultEnumValue) {
+
+                //FIXME: will need to check enum exists and value is valid
+                const [enumName, value] = e.defaultEnumValue.split(".");
+                newInstance[e.field] = value;
+
+            } else if(e.defaultValue) {
+
+                newInstance[e.field] = e.defaultValue;
+            }
+        });
+
+        //defaultEnumValue
+    }
 
     await newInstance.save();
 
@@ -405,7 +433,7 @@ async function completeTask({ taskId, variables }) {
         });
         taskOpts.variables = newVars;
     }
-    
+
     return taskService.complete(taskOpts).then((data) => {
 
         return true;
@@ -414,6 +442,60 @@ async function completeTask({ taskId, variables }) {
 
         console.error("BPM engine request failed due to: " + err.toString());
         return Promise.reject(new Error("Unable to complete task for instance due to business engine error."));
+    });
+
+}
+
+
+
+async function completeTaskForInstance(ModelClass, stateElements, id, taskId, state) {
+
+    const instance = await ModelClass.find(id);
+    if(!instance) {
+        throw new Error("Instance with identifier not found.");
+    }
+
+    // FIXME: check to ensure that the taskId exists and is associated with the instance provided
+
+    const allowedKeys = stateElements ? stateElements.map(e => e.field) : [];
+    const filteredState = (state && allowedKeys && allowedKeys.length) ? _.pick(state, allowedKeys) : null;
+    const taskOpts = {id: taskId};
+
+    // If we have a state update to apply then we can do this here and now.
+    if(filteredState && Object.keys(filteredState).length) {
+
+        let didModify = false;
+        const newVars = {};
+
+        Object.keys(filteredState).forEach(key => {
+
+            const value = filteredState[key];
+
+            if(instance[key] !== value) {
+                instance[key] = value;
+                didModify = true;
+            }
+
+            if(typeof(value) === "string" || typeof(value) === "number" || value === null) {
+                newVars[key] = {value: value};
+            }
+        });
+
+        taskOpts.variables = newVars;
+
+        if(didModify) {
+            await instance.save();
+        }
+    }
+
+    return taskService.complete(taskOpts).then((data) => {
+
+        return true;
+
+    }).catch((err) => {
+
+        logger.error(`Unable to complete business process engine task due to error: ${err.toString()}`);
+        throw new Error("Unable to complete task for instance due to business engine error.");
     });
 
 }

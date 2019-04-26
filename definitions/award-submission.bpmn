@@ -116,10 +116,10 @@
     <bpmn:sequenceFlow id="SequenceFlow_0r7xx3o" sourceRef="ServiceTask_EmailAwardee" targetRef="UserTask_0yudnyq" />
     <bpmn:sequenceFlow id="SequenceFlow_19j4xac" sourceRef="UserTask_0yudnyq" targetRef="ExclusiveGateway_0y9l20l" />
     <bpmn:sequenceFlow id="SequenceFlow_07svxmb" name="Accepted" sourceRef="ExclusiveGateway_0y9l20l" targetRef="UserTask_0uxfm7o">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${state == 'accepted'}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${outcome == 'Accepted'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_1m6bjze" name="Rejected" sourceRef="ExclusiveGateway_0y9l20l" targetRef="EndEvent_03zry8e">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${state == 'rejected'}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${outcome == 'Rejected'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0zdargj" sourceRef="UserTask_0uxfm7o" targetRef="EndEvent_0t9uv8c" />
   </bpmn:process>
