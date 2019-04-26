@@ -86,6 +86,7 @@ CREATE TABLE "awardee-acceptance" (
     "updated" timestamp NOT NULL DEFAULT current_timestamp,
 
     "comments" text,
+    "outcome" text,
     "award_submission_id" uuid REFERENCES "award-submission",
     "awardee_id" uuid REFERENCES "awardee"
 );
