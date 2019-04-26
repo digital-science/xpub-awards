@@ -261,10 +261,23 @@ enum
         if(rest && rest.length) {
         	r.push.apply(r, rest);
         }
-    	return {type:"enum", name:enumName, values:r};
+        const values = {};
+        r.forEach(v => {
+        values[v.name] = v.value;
+        });
+    	return {type:"enum", name:enumName, values:values};
     }
 
-enumValue = ws value:propName ws { return value;  }
+enumValue
+	= ws value:propName mapping:(ws "=>" ws v:value {return v;})? ws
+	{
+    	const r = {name:value, value:value};
+        if(mapping) {
+        	r.value = mapping;
+            r.mapped = true;
+        }
+    	return r;
+    }
 
 // ----- Model -----
 
@@ -441,7 +454,9 @@ modelElementAccessType
     	return (type === "rw" || type === "read-write") ? "read-write" : "read";
     }
 
-modelElementOptions = (modelElementExclusions / modelElementJoinToDetails / modelElementJoinDetails / modelElementAccessors)
+modelElementOptions = (modelElementExclusions / modelElementJoinToDetails /
+						modelElementDefaultStringValue / modelElementDefaultEnumValue /
+                        modelElementJoinDetails / modelElementState / modelElementAccessors)
 
 modelElementExclusions
 	= "input:" inputExclusion:("exclude" / "include")
@@ -480,6 +495,30 @@ modelElementJoinToDetails
     {
     	return {type:"options", joinToField:field};
     }
+
+modelElementState
+	= "state"
+    {
+    	return {type:"options", state:true};
+    }
+
+modelElementDefaultStringValue
+	= "default:" defaultValue:value
+    {
+    	return {type:"options", defaultValue:defaultValue};
+    }
+
+enumRef "enum ref"
+  = first:[a-z_$]i rest:[a-z0–9_.$]i* { return first + rest.join("") }
+
+
+modelElementDefaultEnumValue
+	= "default:" defaultValue:enumRef
+    {
+    	const parts = defaultValue.split(".");
+    	return {type:"options", defaultEnum:parts[0], defaultEnumKey:parts[1]};
+    }
+
 // ----- Form -----
 
 form
