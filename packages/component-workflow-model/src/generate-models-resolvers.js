@@ -81,7 +81,7 @@ function createModelForTask(task, enums, lookupModel) {
         } else if(element.type === "ID") {
             return {key:element.field, value:{type:['string', 'null'], format:'uuid'}};
         } else if(element.type === "DateTime") {
-            return {key:element.field, value:{type:['string', 'null'], format:'date-time'}};
+            return {key:element.field, value:{type:['string', 'object', 'null'], format:'date-time'}}; // 'object' allows the Date type
         }
 
         // See if the element type is defined as an enum and then use that as the defined type.
@@ -138,8 +138,6 @@ function createModelForTask(task, enums, lookupModel) {
                     if(e.array === true) {
 
                         if(e.joinToField) {
-
-                            const joinTableName = `${tableName}-${_tableNameForEntityName(e.field)}`;
 
                             mapping.relation = AwardsBaseModel.HasManyRelation;
                             mapping.modelClass = lookupModel(e.type);
