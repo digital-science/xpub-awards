@@ -70,7 +70,7 @@ exports.resolvers = {
             });
         },
 
-        confirmFileUpload: async function(_, {input:{signedUrl, fileId, signature}}) {
+        confirmFileUpload: async function(_, {input:{signedUrl, fileId, signature, fileByteSize}}) {
 
             const {fileName, mimeType} = signature;
             const file = new File({
@@ -79,7 +79,7 @@ exports.resolvers = {
                 fileName,
                 fileDisplayName:fileName,
                 fileMimeType: mimeType,
-                fileByteSize: 0,
+                fileByteSize: fileByteSize,
                 storageKey: fileId,
                 storageType: "FileStorageExternalS3",
                 confirmed: true
