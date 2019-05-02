@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { Route, Switch } from 'react-router'
 /*import { Dashboard } from 'component-dashboard/client'
 import {
@@ -22,14 +22,16 @@ import ReviewerRedirect from './ReviewerRedirect'
 import ManuscriptRedirect from './ManuscriptRedirect'*/
 
 import AwardsApps from './AwardsApp'
-import Test from './test'
+import Index from './Index'
+import WorkflowPrimaryTask from './WorkflowPrimaryTask'
 
 const Routes = () => (
-  <AwardsApps>
-    <Switch>
-      <Route component={Test} exact path="/" />
-    </Switch>
-  </AwardsApps>
-)
+    <AwardsApps>
+        <Switch>
+            <Route component={Index} exact path="/" />
+            <Route component={WorkflowPrimaryTask} path="/task/:type/:instanceId/:taskName/:taskId" />
+        </Switch>
+    </AwardsApps>
+);
 
 export default Routes

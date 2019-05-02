@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import theme from 'ds-awards-theme';
-import { Root } from 'pubsweet-client';
-import { withClientState } from 'apollo-link-state';
+import Root from './Root';
+//import { Root } from 'pubsweet-client';
 import createHistory from 'history/createBrowserHistory';
+
 // import { ModalProvider } from 'component-modal'
 
 import Routes from './routes';
@@ -22,35 +23,9 @@ const store = {
 const history = createHistory();
 
 const makeApolloConfig = ({ cache, link, ...config }) => {
-    const clientState = withClientState({
-        cache,
-        resolvers: {
-            Mutation: {
-                updateAutosave: (_, { params }, { cache }) => {
-                    const data = {
-                        autosave: {
-                            __typename: 'AutosaveState',
-                            ...params
-                        }
-                    };
-                    cache.writeData({ data });
-                    return null;
-                }
-            }
-        },
-        defaults: {
-            autosave: {
-                __typename: 'AutosaveState',
-                error: null,
-                updatedAt: null,
-                inProgress: false
-            }
-        }
-    });
-
     return {
         cache,
-        link: clientState.concat(link),
+        link,
         ...config
     };
 };

@@ -1,6 +1,7 @@
 [
   "@pubsweet/component-send-email",
   "component-authentication",
+  "component-dashboard",
   "component-workflow",
   "component-workflow-model"
 ]
