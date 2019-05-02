@@ -7,35 +7,35 @@
   <bpmn:process id="award-submission" name="award-submission" isExecutable="true" camunda:versionTag="1">
     <bpmn:laneSet id="LaneSet_1lmhl55">
       <bpmn:lane id="Lane_1rejfm9">
-        <bpmn:flowNodeRef>EndEvent_026kxec</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>EndEvent_053u0m7</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_AwardNotPublished</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_PublishAward</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_PerformPublish</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>ExclusiveGateway_0dsnt3p</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_Submission</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_1ch9m89</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_0yn53e1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_FinalOutcome</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DetailsSubmission</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_FinalDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ServiceTask_PrepareAwardeeDetails</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_Awardees</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:sequenceFlow id="SequenceFlow_1d33ek5" sourceRef="StartEvent_1" targetRef="Task_Submission" />
-    <bpmn:sequenceFlow id="SequenceFlow_0h86vyq" sourceRef="Task_Awardees" targetRef="Task_1ch9m89" />
-    <bpmn:endEvent id="EndEvent_053u0m7" name="Published Award">
+    <bpmn:sequenceFlow id="SequenceFlow_1d33ek5" sourceRef="StartEvent_1" targetRef="Task_DetailsSubmission" />
+    <bpmn:sequenceFlow id="SequenceFlow_0h86vyq" sourceRef="Task_Awardees" targetRef="UserTask_FinalDecision" />
+    <bpmn:endEvent id="EndEvent_PublishAward" name="Published Award">
       <bpmn:incoming>SequenceFlow_0dq1bdm</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_0dq1bdm" sourceRef="Task_PerformPublish" targetRef="EndEvent_053u0m7" />
-    <bpmn:sequenceFlow id="SequenceFlow_08jv2yz" sourceRef="ExclusiveGateway_0dsnt3p" targetRef="Task_PerformPublish">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${decision == 'accepted'}</bpmn:conditionExpression>
+    <bpmn:sequenceFlow id="SequenceFlow_0dq1bdm" sourceRef="Task_PerformPublish" targetRef="EndEvent_PublishAward" />
+    <bpmn:sequenceFlow id="SequenceFlow_08jv2yz" sourceRef="ExclusiveGateway_FinalOutcome" targetRef="Task_PerformPublish">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${outcome == 'accepted'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:endEvent id="EndEvent_026kxec" name="Award Not Published">
+    <bpmn:endEvent id="EndEvent_AwardNotPublished" name="Award Not Published">
       <bpmn:incoming>SequenceFlow_10ax8ob</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_10ax8ob" sourceRef="ExclusiveGateway_0dsnt3p" targetRef="EndEvent_026kxec">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${decision != 'accepted'}</bpmn:conditionExpression>
+    <bpmn:sequenceFlow id="SequenceFlow_10ax8ob" sourceRef="ExclusiveGateway_FinalOutcome" targetRef="EndEvent_AwardNotPublished">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${outcome != 'accepted'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_0r85aaj" sourceRef="Task_1ch9m89" targetRef="ExclusiveGateway_0dsnt3p" />
-    <bpmn:sequenceFlow id="SequenceFlow_1u6nr9s" sourceRef="Task_Submission" targetRef="Task_0yn53e1" />
-    <bpmn:sequenceFlow id="SequenceFlow_18qty39" sourceRef="Task_0yn53e1" targetRef="Task_Awardees" />
+    <bpmn:sequenceFlow id="SequenceFlow_0r85aaj" sourceRef="UserTask_FinalDecision" targetRef="ExclusiveGateway_FinalOutcome" />
+    <bpmn:sequenceFlow id="SequenceFlow_1u6nr9s" sourceRef="Task_DetailsSubmission" targetRef="ServiceTask_PrepareAwardeeDetails" />
+    <bpmn:sequenceFlow id="SequenceFlow_18qty39" sourceRef="ServiceTask_PrepareAwardeeDetails" targetRef="Task_Awardees" />
     <bpmn:serviceTask id="Task_PerformPublish" name="Publish Award" camunda:type="external" camunda:topic="publish-award">
       <bpmn:incoming>SequenceFlow_08jv2yz</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0dq1bdm</bpmn:outgoing>
@@ -43,20 +43,20 @@
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>SequenceFlow_1d33ek5</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:exclusiveGateway id="ExclusiveGateway_0dsnt3p">
+    <bpmn:exclusiveGateway id="ExclusiveGateway_FinalOutcome">
       <bpmn:incoming>SequenceFlow_0r85aaj</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_08jv2yz</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_10ax8ob</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:userTask id="Task_Submission" name="Award Details Submission" camunda:formKey="custom:submission">
+    <bpmn:userTask id="Task_DetailsSubmission" name="Award Details Submission" camunda:formKey="custom:submission">
       <bpmn:incoming>SequenceFlow_1d33ek5</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1u6nr9s</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Task_1ch9m89" name="Final Decision">
+    <bpmn:userTask id="UserTask_FinalDecision" name="Final Decision" camunda:formKey="custom:final-decision">
       <bpmn:incoming>SequenceFlow_0h86vyq</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0r85aaj</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:serviceTask id="Task_0yn53e1" name="Prepare Awardees Details" camunda:type="external" camunda:topic="prepare-awardees">
+    <bpmn:serviceTask id="ServiceTask_PrepareAwardeeDetails" name="Prepare Awardees Details" camunda:type="external" camunda:topic="prepare-awardees">
       <bpmn:incoming>SequenceFlow_1u6nr9s</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_18qty39</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -77,13 +77,13 @@
       <bpmn:lane id="Lane_1c4b9zu" name="Awardee">
         <bpmn:flowNodeRef>StartEvent_1uo3bh7</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ServiceTask_EmailAwardee</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>UserTask_0yudnyq</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>ExclusiveGateway_0y9l20l</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>EndEvent_03zry8e</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_AwardeeAcceptance</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_AwardeeAcceptanceOutcome</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_AwardeeRejected</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_17584pb" name="Awarding Body Administrator">
-        <bpmn:flowNodeRef>UserTask_0uxfm7o</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>EndEvent_0t9uv8c</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_ConfirmAwardee</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_AwardeeAccepted</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="StartEvent_1uo3bh7">
@@ -93,35 +93,35 @@
       <bpmn:incoming>SequenceFlow_0siid3u</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0r7xx3o</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:userTask id="UserTask_0yudnyq" name="Awardee Acceptance" camunda:formKey="custom:acceptance">
+    <bpmn:userTask id="UserTask_AwardeeAcceptance" name="Awardee Acceptance" camunda:formKey="custom:acceptance">
       <bpmn:incoming>SequenceFlow_0r7xx3o</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_19j4xac</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:exclusiveGateway id="ExclusiveGateway_0y9l20l">
+    <bpmn:exclusiveGateway id="ExclusiveGateway_AwardeeAcceptanceOutcome">
       <bpmn:incoming>SequenceFlow_19j4xac</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_07svxmb</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_1m6bjze</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:endEvent id="EndEvent_03zry8e" name="Awardee Rejected">
+    <bpmn:endEvent id="EndEvent_AwardeeRejected" name="Awardee Rejected">
       <bpmn:incoming>SequenceFlow_1m6bjze</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="UserTask_0uxfm7o" name="Confirm Award" camunda:formKey="custom:publish">
+    <bpmn:userTask id="UserTask_ConfirmAwardee" name="Confirm Awardee" camunda:formKey="custom:confirm-awardee">
       <bpmn:incoming>SequenceFlow_07svxmb</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0zdargj</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:endEvent id="EndEvent_0t9uv8c" name="Awardee Accepted">
+    <bpmn:endEvent id="EndEvent_AwardeeAccepted" name="Awardee Accepted">
       <bpmn:incoming>SequenceFlow_0zdargj</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0siid3u" sourceRef="StartEvent_1uo3bh7" targetRef="ServiceTask_EmailAwardee" />
-    <bpmn:sequenceFlow id="SequenceFlow_0r7xx3o" sourceRef="ServiceTask_EmailAwardee" targetRef="UserTask_0yudnyq" />
-    <bpmn:sequenceFlow id="SequenceFlow_19j4xac" sourceRef="UserTask_0yudnyq" targetRef="ExclusiveGateway_0y9l20l" />
-    <bpmn:sequenceFlow id="SequenceFlow_07svxmb" name="Accepted" sourceRef="ExclusiveGateway_0y9l20l" targetRef="UserTask_0uxfm7o">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${outcome == 'Accepted'}</bpmn:conditionExpression>
+    <bpmn:sequenceFlow id="SequenceFlow_0r7xx3o" sourceRef="ServiceTask_EmailAwardee" targetRef="UserTask_AwardeeAcceptance" />
+    <bpmn:sequenceFlow id="SequenceFlow_19j4xac" sourceRef="UserTask_AwardeeAcceptance" targetRef="ExclusiveGateway_AwardeeAcceptanceOutcome" />
+    <bpmn:sequenceFlow id="SequenceFlow_07svxmb" name="Accepted" sourceRef="ExclusiveGateway_AwardeeAcceptanceOutcome" targetRef="UserTask_ConfirmAwardee">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${acceptanceOutcome == 'accepted'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_1m6bjze" name="Rejected" sourceRef="ExclusiveGateway_0y9l20l" targetRef="EndEvent_03zry8e">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${outcome == 'Rejected'}</bpmn:conditionExpression>
+    <bpmn:sequenceFlow id="SequenceFlow_1m6bjze" name="Rejected" sourceRef="ExclusiveGateway_AwardeeAcceptanceOutcome" targetRef="EndEvent_AwardeeRejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${acceptanceOutcome == 'rejected'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_0zdargj" sourceRef="UserTask_0uxfm7o" targetRef="EndEvent_0t9uv8c" />
+    <bpmn:sequenceFlow id="SequenceFlow_0zdargj" sourceRef="UserTask_ConfirmAwardee" targetRef="EndEvent_AwardeeAccepted" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_15ux3tb">
@@ -131,7 +131,7 @@
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="173" y="203" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_0lcbx3l_di" bpmnElement="Task_Submission">
+      <bpmndi:BPMNShape id="UserTask_0lcbx3l_di" bpmnElement="Task_DetailsSubmission">
         <dc:Bounds x="288" y="181" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1d33ek5_di" bpmnElement="SequenceFlow_1d33ek5">
@@ -141,7 +141,7 @@
       <bpmndi:BPMNShape id="Lane_1rejfm9_di" bpmnElement="Lane_1rejfm9">
         <dc:Bounds x="153" y="82" width="1190" height="392" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="EndEvent_053u0m7_di" bpmnElement="EndEvent_053u0m7">
+      <bpmndi:BPMNShape id="EndEvent_053u0m7_di" bpmnElement="EndEvent_PublishAward">
         <dc:Bounds x="1212" y="203" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1189" y="246" width="83" height="14" />
@@ -167,14 +167,14 @@
         <di:waypoint x="279" y="644" />
         <di:waypoint x="337" y="644" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="UserTask_0yudnyq_di" bpmnElement="UserTask_0yudnyq">
+      <bpmndi:BPMNShape id="UserTask_0yudnyq_di" bpmnElement="UserTask_AwardeeAcceptance">
         <dc:Bounds x="510" y="604" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0r7xx3o_di" bpmnElement="SequenceFlow_0r7xx3o">
         <di:waypoint x="437" y="644" />
         <di:waypoint x="510" y="644" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ExclusiveGateway_0y9l20l_di" bpmnElement="ExclusiveGateway_0y9l20l" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="ExclusiveGateway_0y9l20l_di" bpmnElement="ExclusiveGateway_AwardeeAcceptanceOutcome" isMarkerVisible="true">
         <dc:Bounds x="713" y="619" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_19j4xac_di" bpmnElement="SequenceFlow_19j4xac">
@@ -187,7 +187,7 @@
       <bpmndi:BPMNShape id="Lane_17584pb_di" bpmnElement="Lane_17584pb">
         <dc:Bounds x="153" y="755" width="965" height="231" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_0uxfm7o_di" bpmnElement="UserTask_0uxfm7o">
+      <bpmndi:BPMNShape id="UserTask_0uxfm7o_di" bpmnElement="UserTask_ConfirmAwardee">
         <dc:Bounds x="688" y="837" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_07svxmb_di" bpmnElement="SequenceFlow_07svxmb">
@@ -197,7 +197,7 @@
           <dc:Bounds x="745" y="713" width="46" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="EndEvent_0t9uv8c_di" bpmnElement="EndEvent_0t9uv8c">
+      <bpmndi:BPMNShape id="EndEvent_0t9uv8c_di" bpmnElement="EndEvent_AwardeeAccepted">
         <dc:Bounds x="943" y="859" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="940" y="902" width="46" height="27" />
@@ -207,7 +207,7 @@
         <di:waypoint x="788" y="877" />
         <di:waypoint x="943" y="877" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="EndEvent_03zry8e_di" bpmnElement="EndEvent_03zry8e">
+      <bpmndi:BPMNShape id="EndEvent_03zry8e_di" bpmnElement="EndEvent_AwardeeRejected">
         <dc:Bounds x="943" y="626" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="918" y="669" width="90" height="14" />
@@ -223,21 +223,21 @@
       <bpmndi:BPMNShape id="CallActivity_0g1wr23_di" bpmnElement="Task_Awardees">
         <dc:Bounds x="607" y="181" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_0ogr5e6_di" bpmnElement="Task_1ch9m89">
+      <bpmndi:BPMNShape id="UserTask_0ogr5e6_di" bpmnElement="UserTask_FinalDecision">
         <dc:Bounds x="764" y="181" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0h86vyq_di" bpmnElement="SequenceFlow_0h86vyq">
         <di:waypoint x="707" y="221" />
         <di:waypoint x="764" y="221" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ExclusiveGateway_0dsnt3p_di" bpmnElement="ExclusiveGateway_0dsnt3p" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="ExclusiveGateway_0dsnt3p_di" bpmnElement="ExclusiveGateway_FinalOutcome" isMarkerVisible="true">
         <dc:Bounds x="916" y="196" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_08jv2yz_di" bpmnElement="SequenceFlow_08jv2yz">
         <di:waypoint x="966" y="221" />
         <di:waypoint x="1035" y="221" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="EndEvent_026kxec_di" bpmnElement="EndEvent_026kxec">
+      <bpmndi:BPMNShape id="EndEvent_026kxec_di" bpmnElement="EndEvent_AwardNotPublished">
         <dc:Bounds x="1212" y="366" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1207" y="409" width="52" height="27" />
@@ -252,7 +252,7 @@
         <di:waypoint x="864" y="221" />
         <di:waypoint x="916" y="221" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_114zkzt_di" bpmnElement="Task_0yn53e1">
+      <bpmndi:BPMNShape id="ServiceTask_114zkzt_di" bpmnElement="ServiceTask_PrepareAwardeeDetails">
         <dc:Bounds x="445" y="181" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1u6nr9s_di" bpmnElement="SequenceFlow_1u6nr9s">

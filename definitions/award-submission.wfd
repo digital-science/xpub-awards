@@ -3,6 +3,13 @@ enum AwardType {
     FieldsMedal
 }
 
+enum AwardPublishingResult {
+    Undetermined => "undetermined",
+    Publish => "publish",
+    Reject => "reject"
+}
+
+
 task AwardSubmission {
 
     processKey: "award-submission"
@@ -11,15 +18,21 @@ task AwardSubmission {
         awardType: AwardType,
         date: DateTime,
         citation: String,
+
+        outcome: AwardPublishingResult <state, default:AwardPublishingResult.Undetermined>,
+
         awardees: [Awardee] <set>,
         files: [File] <set>,
+
         awardeeAcceptances: [AwardeeAcceptance] <join-to-field:"awardSubmissionId">
     }
 
-    form "test" extend "anotherForm" {
+    form "submission" {
 
         outcomes: [
-            { "complete" => Complete }
+            { "complete" => Complete },
+            { "save-for-later" => Save },
+            { "cancel" => Cancel, confirmation:true, message:"Are you sure you want to cancel this award submission?" }
         ]
 
         options: {
@@ -28,15 +41,41 @@ task AwardSubmission {
 
         elements: {
 
-            {
-              Group => name,
-              children:{
-                  { Header, text:"One two three" }
-              },
-              header: "Something, something"
-            }
+            { AwardeesEditor => awardees, label:"Awarded to" }
 
-            { Input => name, message:"Hello world!" }
+            { TextArea => citation, label:"Award citation" }
+
+            { Date => date, label:"Date Awarded" }
+
+            { FileUploader => files, label:"Associated award files" }
+
+            { Button, default:true, outcome:"complete", label:"Submit for Awardee Acceptance" }
+
+        }
+    }
+
+    form "final-decision" {
+
+        outcomes: [
+            {
+                "publish" => Complete,
+                state: {
+                    publishingOutcome: AwardPublishingResult.Publish
+                }
+            },
+            {
+                "reject" => Complete,
+                state: {
+                    publishingOutcome: AwardPublishingResult.Reject
+                }
+            }
+        ]
+
+        elements: {
+
+            { Button, default:true, outcome:"publish", label:"Publish Award" }
+
+            { Button, outcome:"reject", label:"Reject Award" }
 
         }
     }
@@ -50,12 +89,75 @@ enum AwardAcceptanceOutcome {
     Rejected => "rejected"
 }
 
+enum AwardeePublishingOutcome {
+    Unknown => "unknown",
+    Include => "include",
+    Exclude => "exclude"
+}
+
+
 task AwardeeAcceptance {
 
     model+input <no-create> {
         awardSubmission: AwardSubmission <join-field:"awardSubmissionId">,
         awardee: Awardee <join-field:"awardeeId">,
         comments: String,
-        outcome: AwardAcceptanceOutcome <state, default:AwardAcceptanceOutcome.Pending>
+
+        acceptanceOutcome: AwardAcceptanceOutcome <state, default:AwardAcceptanceOutcome.Pending>,
+        publishingOutcome: AwardeePublishingOutcome <state, default:AwardeePublishingOutcome.Unknown>
+    }
+
+    form "acceptance" {
+
+        outcomes: [
+            {
+                "accept" => Complete,
+                state: {
+                    acceptanceOutcome: AwardAcceptanceOutcome.Accepted
+                }
+            },
+            {
+                "reject" => Complete,
+                state: {
+                    acceptanceOutcome: AwardAcceptanceOutcome.Rejected
+                }
+            }
+        ]
+
+        elements: {
+
+            { TextArea => comments, label:"Comments" }
+
+            { Button, default:true, outcome:"accept", label:"Accept Award" }
+
+            { Button, outcome:"reject", label:"Reject Award" }
+
+        }
+    }
+
+    form "confirm-awardee" {
+
+        outcomes: [
+            {
+                "include-awardee" => Complete,
+                state: {
+                    publishingOutcome: AwardeePublishingOutcome.Include
+                }
+            },
+            {
+                "exclude-awardee" => Complete,
+                state: {
+                    publishingOutcome: AwardeePublishingOutcome.Exclude
+                }
+            }
+        ]
+
+        elements: {
+
+            { Button, default:true, outcome:"include-awardee", label:"Include Awardee" }
+
+            { Button, outcome:"exclude-awardee", label:"Exclude Awardee" }
+
+        }
     }
 }

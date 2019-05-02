@@ -58,7 +58,8 @@ CREATE TABLE "award-submission" (
 
     "citation" text,
     "date" timestamp,
-    "award_type" text
+    "award_type" text,
+    "outcome" text
 );
 
 
@@ -86,7 +87,9 @@ CREATE TABLE "awardee-acceptance" (
     "updated" timestamp NOT NULL DEFAULT current_timestamp,
 
     "comments" text,
-    "outcome" text,
+    "acceptance_outcome" text,
+    "publishing_outcome" text,
+
     "award_submission_id" uuid REFERENCES "award-submission",
     "awardee_id" uuid REFERENCES "awardee"
 );
