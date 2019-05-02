@@ -1,0 +1,29 @@
+.uploaded-files-listing .file-index {
+    display: inline-block;
+    padding: 5px;
+    background: darkgrey;
+    color: white;
+}
+
+.uploaded-files-listing .file-icon,
+.uploaded-files-listing .file-name ,
+.uploaded-files-listing .file-remove {
+    display: inline-block;
+    padding: 5px;
+}
+
+
+
+.form-field-files {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.form-field-files .react-dropzone-s3-uploader {
+    width: 500px !important;
+    height: 40px !important;
+}
+
+.form-field-files .react-dropzone-s3-uploader .greeting {
+    padding: 8px;
+}
