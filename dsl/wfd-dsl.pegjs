@@ -606,6 +606,7 @@ formOutcome
 	= begin_object
     type:string
     result:(ws "=>" ws result:propName {return result;})?
+    state:formOutcomeStateSet?
     propList:propertyList?
     end_object
     {
@@ -618,7 +619,48 @@ formOutcome
             }
           });
         }
+        if(state) {
+        	r.state = state;
+        }
         return r;
+    }
+
+formOutcomeStateSet
+ 	= ws "," ws "state" ws ":"
+    begin_object
+    first:formOutcomeStateKeyValuePair?
+    rest:("," value:formOutcomeStateKeyValuePair {return value})*
+    end_object
+    {
+    	if(!first) {
+        	return null;
+        }
+        const v = [first, ...(rest || [])];
+        const r = {};
+
+        v.forEach(kp => {
+        	r[kp.key] = kp;
+            delete kp.key;
+        });
+    	return r;
+    }
+
+formOutcomeStateKeyValuePair
+	= ws name:propName name_separator value:(formOutcomeStateSimpleValue / formOutcomeStateEnumValue)
+    {
+    	return Object.assign({key:name}, value);
+    }
+
+formOutcomeStateSimpleValue
+	= value:value
+    {
+        return {type:"simple", value:value};
+    }
+
+formOutcomeStateEnumValue
+	= value:enumRef
+    {
+    	return {type:"enum", value:value};
     }
 
 formElements
