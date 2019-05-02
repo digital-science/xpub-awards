@@ -1,0 +1,5 @@
+extend type Query {
+
+    awardSubmissions(active:Boolean) : [AwardSubmission]
+
+}
