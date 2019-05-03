@@ -6,7 +6,8 @@ enum AwardType {
 enum AwardPublishingResult {
     Undetermined => "undetermined",
     Publish => "publish",
-    Reject => "reject"
+    Reject => "reject",
+    Published => "published",
 }
 
 
