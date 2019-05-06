@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { WorkflowDescriptionContext } from 'client-workflow-model'
 import { TaskForm } from 'component-task-form/client'
 
-function WorkflowPrimaryTask({ match }) {
+function WorkflowPrimaryTask({ match, history }) {
 
     const { instanceId, taskId, taskName, type } = match.params;
     const WorkflowDescription = useContext(WorkflowDescriptionContext);
@@ -18,12 +18,18 @@ function WorkflowPrimaryTask({ match }) {
     console.dir(instanceType);
     console.dir(formDefinition);
 
+    const wasSubmitted = () => {
+        history.push("/");
+    };
+
     return (
         <div>
             Workflow Primary Task
             <br />
             <br />
-            <TaskForm instanceId={instanceId} instanceType={instanceType} taskId={taskId} formDefinition={formDefinition} workflowDescription={WorkflowDescription}>
+            <TaskForm instanceId={instanceId} instanceType={instanceType} taskId={taskId}
+                      formDefinition={formDefinition} workflowDescription={WorkflowDescription}
+                        wasSubmitted={wasSubmitted}>
             </TaskForm>
         </div>
     );

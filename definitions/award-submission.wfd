@@ -7,7 +7,7 @@ enum AwardPublishingResult {
     Undetermined => "undetermined",
     Publish => "publish",
     Reject => "reject",
-    Published => "published",
+    Published => "published"
 }
 
 
@@ -61,13 +61,13 @@ task AwardSubmission {
             {
                 "publish" => Complete,
                 state: {
-                    publishingOutcome: AwardPublishingResult.Publish
+                    outcome: AwardPublishingResult.Publish
                 }
             },
             {
                 "reject" => Complete,
                 state: {
-                    publishingOutcome: AwardPublishingResult.Reject
+                    outcome: AwardPublishingResult.Reject
                 }
             }
         ]
@@ -126,6 +126,8 @@ task AwardeeAcceptance {
         ]
 
         elements: {
+
+            { AwardeeORCIDIdentityLink => awardee, required:true }
 
             { TextArea => comments, label:"Comments" }
 

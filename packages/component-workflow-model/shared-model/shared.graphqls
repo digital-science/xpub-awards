@@ -177,14 +177,29 @@ type Identity {
     updated: DateTime
 
     type: IdentityType
+
+    identityId: String
     displayName: String
     displayAffiliation: String
+
+    accessToken: String
+    refreshToken: String
+    accessScope: String
+    accessTokenExpire: Int
 }
 
 input CreateIdentityInput {
     type: IdentityType
+
+    identityId: String
+
     displayName: String
     displayAffiliation: String
+
+    accessToken: String
+    refreshToken: String
+    accessScope: String
+    accessTokenExpire: Int
 }
 
 input UpdateIdentityInput {
@@ -198,6 +213,6 @@ extend type Query {
 }
 
 extend type Mutation {
-    createIdentity(input:CreateIdentityInput): ID
+    createIdentity(input:CreateIdentityInput) : ID
     updateIdentity(input:UpdateIdentityInput) : Boolean
 }

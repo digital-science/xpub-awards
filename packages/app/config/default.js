@@ -63,8 +63,9 @@ module.exports = {
     orcid: {
         clientID: process.env.ORCID_CLIENT_ID,
         clientSecret: process.env.ORCID_CLIENT_SECRET,
-        callbackPath: '/api/users/orcid/callback',
-        successPath: '/profile'
+        authenticatePath: '/orcid/authenticate',
+        callbackPath: '/orcid/callback',
+        successPath: '/'
     },
     'mail-transport': {
         sendmail: true

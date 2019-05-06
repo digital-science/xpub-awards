@@ -2,6 +2,10 @@
     max-width: 600px;
 }
 
+.dashboard > div {
+    margin-bottom: 20px;
+}
+
 
 .dashboard ol {
     list-style: none;

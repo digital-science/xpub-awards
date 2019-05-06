@@ -15,7 +15,7 @@ import debounce from 'lodash/debounce';
 import pick from 'lodash/pick';
 
 
-export default function TaskForm({ instanceId, taskId, instanceType, formDefinition, workflowDescription }) {
+export default function TaskForm({ instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted }) {
 
     const {fetchFields, topLevelFields} = resolveFieldsRequiredForForm(formDefinition.elements, FieldRegistry);
 
@@ -112,6 +112,10 @@ export default function TaskForm({ instanceId, taskId, instanceType, formDefinit
             return completeInstanceTask(instanceId, taskId, state).then(result => {
 
                 console.log(`Completed task[${taskId}] for instance[${instanceId}]`);
+
+                if(wasSubmitted) {
+                    return wasSubmitted(outcome, state);
+                }
             });
         }
     };

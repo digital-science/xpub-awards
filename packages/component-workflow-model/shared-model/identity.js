@@ -12,8 +12,15 @@ class Identity extends AwardsBaseModel {
             type:'object',
             properties: {
                 type: { type: ['string', 'null'] },
+
+                identityId: { type: ['string', 'null'] },
                 displayName: { type: ['string', 'null'] },
-                displayAffiliation: { type: ['string', 'null'] }
+                displayAffiliation: { type: ['string', 'null'] },
+
+                accessToken: { type: ['string', 'null'] },
+                refreshToken: { type: ['string', 'null'] },
+                accessScope: { type: ['string', 'null'] },
+                accessTokenExpire: { type: ['integer', 'null'] }
             }
         };
     }
@@ -68,6 +75,9 @@ exports.resolvers = {
     Mutation: {
         createIdentity,
         updateIdentity
+    },
+    IdentityType: {
+        ORCiDIdentityType: "orcid"
     }
 };
 
