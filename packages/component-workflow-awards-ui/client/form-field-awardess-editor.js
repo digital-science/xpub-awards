@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Spinner from 'ds-awards-theme/components/spinner';
 import pick from 'lodash/pick';
 
-//import useFormValueBinding from './../../hooks/useFormValueBinding';
-import withFormField from './withFormField'
+import { withFormField } from 'component-task-form/client';
 import { FaTimes } from 'react-icons/fa';
 
-import useSetInstanceAssociatedAwardeesMutation from './../../mutations/setInstanceAssociatedAwardees';
-import useCreateAwardeeMutation from './../../mutations/createAwardee';
-import useSetInstanceAssociatedFilesMutation from "../../mutations/setInstanceAssociatedFiles";
+import useSetInstanceAssociatedAwardeesMutation from './mutations/setInstanceAssociatedAwardees';
+import useCreateAwardeeMutation from './mutations/createAwardee';
 
 
 
@@ -112,7 +110,7 @@ function FormFieldAwardeesEditor({formData, binding, instanceId, instanceType, o
     // on delete, un-associate it from the parent object???
 
     const [awardeesListing, setAwardeesListing] = useState([]);
-    const setInstanceAssociatedAwardees = useSetInstanceAssociatedFilesMutation(instanceType, binding);
+    const setInstanceAssociatedAwardees = useSetInstanceAssociatedAwardeesMutation(instanceType, binding);
     const createAwardee = useCreateAwardeeMutation();
 
     const formDataWasChanged = function _formDataWasChanged(form, field, v) {

@@ -2,6 +2,12 @@ import React, { useContext } from 'react'
 import { WorkflowDescriptionContext } from 'client-workflow-model'
 import { TaskForm } from 'component-task-form/client'
 
+import SetupWorkflowAwardsUI from 'component-workflow-awards-ui/client/setup';
+
+// Register Awards specific UI components
+SetupWorkflowAwardsUI();
+
+
 function WorkflowPrimaryTask({ match, history }) {
 
     const { instanceId, taskId, taskName, type } = match.params;

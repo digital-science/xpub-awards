@@ -99,6 +99,7 @@ async function linkIdentityToAwardee(context, { input }) {
     return true;
 }
 
+
 async function resolveIdentityForAwardee(instance) {
 
     if(!instance) {

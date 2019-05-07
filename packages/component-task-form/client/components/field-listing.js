@@ -1,9 +1,8 @@
 import React from 'react';
 
 
-function FormFieldListing(props) {
+function FormFieldListing({ task, submission, elements, fieldRegistry, formData, submitTaskOutcome, instanceId, instanceType, taskId, refetchFormData }) {
 
-    const { task, submission, elements, fieldRegistry, formData, submitTaskOutcome, instanceId, instanceType } = props;
     if(!elements || !elements.length || !fieldRegistry || !formData || !instanceId || !instanceType) {
         return null;
     }
@@ -14,8 +13,9 @@ function FormFieldListing(props) {
         if(ElementComponent) {
             return <ElementComponent key={i} task={task} submission={submission}
                 binding={e.binding} options={e.options || {}} fieldRegistry={fieldRegistry}
-                description={e} formData={formData} submitTaskOutcome={submitTaskOutcome}
-                instanceId={instanceId} instanceType={instanceType}/>;
+                description={e} formData={formData} refetchFormData={refetchFormData}
+                submitTaskOutcome={submitTaskOutcome} instanceId={instanceId} instanceType={instanceType}
+                taskId={taskId}/>;
         }
 
         return <div key={i}>Unknown Element Type</div>;

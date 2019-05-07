@@ -20,9 +20,9 @@ const getDbConfig = () => {
     return {};
 };
 
-module.exports = {
+const values = {
     // Public keys are copied into webpack build (i.e. go client-side)
-    publicKeys: ['pubsweet-client', 'authsome', 'validations'],
+    publicKeys: ['pubsweet-client', 'authsome', 'validations', 'orcid-paths'],
 
     authsome: {
         mode: path.resolve(__dirname, 'authsome-mode.js'),
@@ -63,8 +63,16 @@ module.exports = {
     orcid: {
         clientID: process.env.ORCID_CLIENT_ID,
         clientSecret: process.env.ORCID_CLIENT_SECRET,
+
+        orcidUrl: 'sandbox.orcid.org',
+        orcidDisplayUrl: 'orcid.org',
+
         authenticatePath: '/orcid/authenticate',
         callbackPath: '/orcid/callback',
+
+        associatePath: '/orcid/link',
+        associateCallbackPath: '/orcid/associate',
+
         successPath: '/'
     },
     'mail-transport': {
@@ -99,3 +107,13 @@ module.exports = {
         bucket: process.env.AWS_S3_BUCKET
     }
 };
+
+values['orcid-paths'] = {
+    orcidUrl: values.orcid.orcidUrl,
+    orcidDisplayUrl: values.orcid.orcidDisplayUrl,
+    authenticatePath: values.orcid.authenticatePath,
+    associatePath: values.orcid.associatePath
+};
+
+module.exports = values;
+

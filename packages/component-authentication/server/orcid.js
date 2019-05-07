@@ -3,6 +3,8 @@ const config = require("config");
 
 const { clientID, clientSecret, callbackPath, successPath, authenticatePath } = config.get('orcid');
 
+
+
 module.exports = (app) => {
 
     const { passport } = app.locals;
@@ -22,9 +24,6 @@ module.exports = (app) => {
     });
 
     const orcid = new OrcidStrategy(options, (accessToken, refreshToken, params, profile, done) => {
-
-        console.dir(params);
-        console.dir(profile);
 
         profile = {
             orcid: params.orcid,

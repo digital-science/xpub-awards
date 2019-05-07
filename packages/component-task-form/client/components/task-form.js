@@ -19,13 +19,17 @@ export default function TaskForm({ instanceId, taskId, instanceType, formDefinit
 
     const {fetchFields, topLevelFields} = resolveFieldsRequiredForForm(formDefinition.elements, FieldRegistry);
 
-    const { data, error, loading } = useGetInstanceQuery(instanceId, instanceType, fetchFields);
-    const [formData, setFormData] = useState(new TaskFormData({}));
+    const { data, error, loading, refetch } = useGetInstanceQuery(instanceId, instanceType, fetchFields);
+    const [formData, setFormData] = useState(null);
     const [showIsSaving, displayIsSavingMessage, removeIsSavingMessage] = useTimedMinimumDisplay(1500);
     const completeInstanceTask = useCompleteInstanceTask(instanceType);
     const updateInstance = useUpdateInstance(instanceType);
 
     function _updateInstanceFromFormData() {
+
+        if(!formData) {
+            return Promise.resolve();
+        }
 
         const modifiedDataSet = formData.getModifiedData();
         if(!modifiedDataSet) {
@@ -44,6 +48,10 @@ export default function TaskForm({ instanceId, taskId, instanceType, formDefinit
             formData.updateForSubmittedModifications(modifiedDataSet);
         });
     }
+
+    const refetchFormData = () => {
+        return refetch();
+    };
 
     // Upon receiving the initial data set, pick the top level fields from the data set and initialise a
     // new form data set with these initial values.
@@ -139,7 +147,7 @@ export default function TaskForm({ instanceId, taskId, instanceType, formDefinit
         return <div>Task Not Found</div>
     }
 
-    return (
+    return formData ? (
         <div className="task-form" style={{padding: "20px", position:"relative"}}>
             <div style={{position:'absolute', top:0, left: "500px", visibility:showIsSaving ? "visible" : "hidden"}}>
                 <Spinner /> <span>Saving&hellip;</span>
@@ -150,13 +158,16 @@ export default function TaskForm({ instanceId, taskId, instanceType, formDefinit
             <br />
 
             <div>
-                <FieldListing elements={formDefinition.elements} fieldRegistry={FieldRegistry} formData={formData}
-                    instanceId={instanceId} instanceType={instanceType} submitTaskOutcome={submitTaskOutcome} />
+                <FieldListing elements={formDefinition.elements} fieldRegistry={FieldRegistry} formData={formData} refetchFormData={refetchFormData}
+                    instanceId={instanceId} instanceType={instanceType} taskId={taskId} submitTaskOutcome={submitTaskOutcome} />
             </div>
 
         </div>
+    ) : (
+        <div>Loading</div>
     );
 };
+
 
 function resolveFieldsRequiredForForm(elements, registry) {
 

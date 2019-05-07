@@ -2,6 +2,9 @@
   "@pubsweet/component-send-email",
   "component-authentication",
   "component-dashboard",
-  "component-workflow",
+  "component-model",
+  "component-task-form",
+  "component-workflow-awards-ui",
+  "component-workflow-awards-tasks",
   "component-workflow-model"
 ]
