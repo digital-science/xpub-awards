@@ -1,5 +1,5 @@
-import React from 'react'
-import { Route, Switch } from 'react-router'
+import React, { Fragment } from 'react'
+import { Router, Route, Switch } from 'react-router'
 /*import { Dashboard } from 'component-dashboard/client'
 import {
   Login,
@@ -24,7 +24,23 @@ import ManuscriptRedirect from './ManuscriptRedirect'*/
 import AwardsApps from './AwardsApp'
 import Index from './Index'
 import WorkflowPrimaryTask from './WorkflowPrimaryTask'
+import WorkflowTaskFormModal from './WorkflowTaskFormModal'
 
+
+const Routes = () => (
+    <AwardsApps>
+        <Route path="/" render={props => {
+            return (
+                <Fragment>
+                    <Index history={props.history} />
+                    <Route component={WorkflowTaskFormModal} path="/task/:type/:instanceId/:taskName/:taskId" />
+                </Fragment>
+            );
+        }} />
+    </AwardsApps>
+);
+
+/*
 const Routes = () => (
     <AwardsApps>
         <Switch>
@@ -33,5 +49,6 @@ const Routes = () => (
         </Switch>
     </AwardsApps>
 );
+*/
 
 export default Routes

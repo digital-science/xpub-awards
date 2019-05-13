@@ -4,7 +4,7 @@
 */
 
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import { ConnectedRouter } from 'react-router-redux';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux'
@@ -76,7 +76,7 @@ const Root = ({
     const client = makeApolloClient(makeApolloConfig, connectToWebSocket);
 
     return (
-        <div>
+        <Fragment>
             <Normalize />
             <WorkflowDescriptionContext.Provider value={clientWorkflowDescription}>
                 <ApolloProvider client={client}>
@@ -84,17 +84,18 @@ const Root = ({
                         <Provider store={store}>
                             <ConnectedRouter history={history}>
                                 <ThemeProvider theme={theme}>
-                                    <StyleRoot>{routes}</StyleRoot>
+                                    {routes}
                                 </ThemeProvider>
                             </ConnectedRouter>
                         </Provider>
                     </ApolloHooksProvider>
                 </ApolloProvider>
             </WorkflowDescriptionContext.Provider>
-        </div>
+        </Fragment>
     );
 };
 
+/*<StyleRoot>{routes}</StyleRoot>*/
 
 Root.propTypes = {
     routes: PropTypes.node.isRequired,

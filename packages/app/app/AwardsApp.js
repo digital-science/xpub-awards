@@ -3,6 +3,13 @@ import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import styled, { createGlobalStyle } from 'styled-components';
 
+import Header from './Header';
+import Footer from './Footer';
+import Sidebar from './Siderbar';
+
+
+import './base.css';
+
 const GlobalStyles = createGlobalStyle`
   body {
     height: 100vh;
@@ -12,6 +19,7 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
+/*
 const App = ({ autosave, journal = {}, goTo, children }) => (
     <Fragment>
         <GlobalStyles />
@@ -20,6 +28,20 @@ const App = ({ autosave, journal = {}, goTo, children }) => (
         </Container>
     </Fragment>
 );
+*/
+
+const App = ({ autosave, journal = {}, goTo, children }) => (
+    <Fragment>
+        <GlobalStyles />
+        <Header/>
+        <div className="HolyGrail-body">
+            <main className="HolyGrail-content">{children}</main>
+            <Sidebar>Nav</Sidebar>
+        </div>
+        <Footer/>
+    </Fragment>
+);
+
 
 export default DragDropContext(HTML5Backend)(App);
 

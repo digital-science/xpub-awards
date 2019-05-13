@@ -19,6 +19,7 @@ export default (active, opts = {}) => {
 query GetAwardSubmissions($active:Boolean) {
   submissions: awardSubmissions(active:$active) {
     id
+    date
     outcome
     files {
       fileName
@@ -30,6 +31,11 @@ query GetAwardSubmissions($active:Boolean) {
       lastName
       affiliation
       email
+      identity {
+        id
+        type
+        identityId
+      }
     }
     tasks {
       id
@@ -40,8 +46,7 @@ query GetAwardSubmissions($active:Boolean) {
       acceptanceOutcome
       publishingOutcome
       awardee {
-        firstName
-        lastName
+        id
       }
       tasks {
         id

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 
 import useCreateFileUploadSignedUrlMutation from './../../mutations/createFileUploadSignedUrl';
 import useConfirmUploadedFileMutation from './../../mutations/confirmUploadedFile';
@@ -7,8 +8,10 @@ import withFormField from './withFormField';
 
 import humanFormatByteCount from './../../utils/humanFormatByteCount';
 
-import DropzoneS3Uploader from 'react-dropzone-s3-uploader';
-import { FaFilePdf, FaTimes, FaUpload } from 'react-icons/fa';
+import FileUploader from 'ds-awards-theme/components/file-uploader';
+import Label from 'ds-awards-theme/components/label';
+
+import { FaFilePdf, FaTimes } from 'react-icons/fa';
 
 import './form-field-file-uploader.css';
 
@@ -40,26 +43,17 @@ function FileUploadFileListing({ files, instanceId, instanceType, removeFile }) 
     );
 }
 
-function FileUploadGreeting(props) {
-    return <div className="greeting"><FaUpload /> {props.message}</div>;
-}
 
-function FileUploadProgress({progress}) {
-
-    if(progress === null || progress === undefined) {
-        return <div />;
+const FileUploaderHolder = styled.div`
+    margin-top: 15px;
+    margin-bottom: 15px;
+    
+    > div.inner-holder {
+        border: 1px solid #d0d0d0;
+        border-radius: 5px;
+        padding: 5px;
     }
-    return (
-        <div className="progress-holder">
-            <div style={{flexBasis: `${progress}%`}} />
-        </div>
-    );
-}
-
-function FileUploadError({error}) {
-
-    return (error) ? <div className="error">{error}</div> : <div />;
-}
+`;
 
 
 
@@ -163,6 +157,8 @@ function FormFieldFileUploader({ formData, binding, instanceId, instanceType, op
 
     function removeFile(file) {
 
+        // FIXME: the file should be updated so it is considered removed from the owning data set, this could also be a special GraphQL mutation which accomplishes the same thing
+
         console.log("Remove file !!!");
         console.dir(file);
 
@@ -178,25 +174,27 @@ function FormFieldFileUploader({ formData, binding, instanceId, instanceType, op
         uploadRequestHeaders:{}
     };
 
+    // FIXME: hard-coded value below for S3 bucket source
     return (
-        <div className={"form-field-files"}>
-            {options.label ? <label>{options.label}</label> : null}
+        <FileUploaderHolder className={"form-field-files"}>
+            {options.label ? <Label>{options.label}</Label> : null}
 
-            <DropzoneS3Uploader
-                s3Url={'https://ds-innovation-workflow-dev.s3.eu-west-2.amazonaws.com/'}
-                isImage={filename => { return false; }}
-                upload={upload}
-                onFinish={finishedFileUpload}
-            >
-                <FileUploadGreeting message={options.message || <span><b>Choose a file</b> or drag it here.</span>} />
-                <FileUploadProgress />
-                <FileUploadError />
-            </DropzoneS3Uploader>
+            <div className="inner-holder">
+                <FileUploader
+                    s3Url={'https://ds-innovation-workflow-dev.s3.eu-west-2.amazonaws.com/'}
+                    isImage={filename => { return false; }}
+                    upload={upload}
+                    onFinish={finishedFileUpload}
+                    message={options.message}
+                >
+                </FileUploader>
 
-            <FileUploadFileListing files={fileListing} instanceId={instanceId} instanceType={instanceType} removeFile={removeFile} />
-        </div>
+                <FileUploadFileListing files={fileListing} instanceId={instanceId} instanceType={instanceType} removeFile={removeFile} />
+            </div>
+        </FileUploaderHolder>
     );
 }
+
 
 
 export default withFormField(FormFieldFileUploader, (element) => {

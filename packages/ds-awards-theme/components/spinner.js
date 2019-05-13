@@ -1,9 +1,9 @@
 import React from 'react';
 import './spinner.css';
 
-function Spinner({}) {
+function Spinner({center}) {
     return (
-        <div className="loader" />
+        <div className={`loader ${center ? 'center' : ''}`} />
     );
 }
 

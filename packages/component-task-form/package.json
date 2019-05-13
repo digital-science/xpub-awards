@@ -5,8 +5,6 @@
     "event-emitter": "^0.3.5",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
-    "react-dates": "18.4.0",
-    "react-dropzone-s3-uploader": "^1.1.0",
     "react-icons": "^3.6.1"
   }
 }

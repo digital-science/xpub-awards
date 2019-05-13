@@ -5,7 +5,9 @@ export default (instanceId, instanceType, fields, opts = {}) => {
 
     const queryOptions = {
         suspend: false,
-        fetchPolicy: 'network-only'
+        fetchPolicy: 'network-only',
+        partialRefetch: false
+        //fetchPolicy: 'cache-first'
     };
 
     Object.assign(queryOptions, opts);
