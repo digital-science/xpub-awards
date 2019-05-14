@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { WorkflowDescriptionContext } from 'client-workflow-model'
-import { TaskForm } from 'component-task-form/client'
-import ModalOverlay from 'component-overlay/components/overlay';
+import { taskFormForFormDefinition } from 'component-task-form/client'
+import ModalOverlay from 'component-overlay';
 
 
 // Register Awards specific UI components
@@ -20,22 +20,20 @@ function WorkflowTaskFormModal({ match, history }) {
     }
 
     const formDefinition = instanceType.formDefinitionForFormName(taskName);
-
-    console.dir(WorkflowDescription);
-    console.dir(instanceType);
-    console.dir(formDefinition);
+    const TaskFormType = taskFormForFormDefinition(formDefinition);
 
     const wasSubmitted = () => {
         history.push("/");
     };
 
+    const modalHeading = formDefinition && formDefinition.options ? formDefinition.options.heading : null;
+
     return (
-        <ModalOverlay isOpen={true} hasClose={true} close={wasSubmitted}>
-            <TaskForm instanceId={instanceId} instanceType={instanceType} taskId={taskId}
+        <ModalOverlay heading={modalHeading} isOpen={true} hasClose={true} close={wasSubmitted}>
+            <TaskFormType instanceId={instanceId} instanceType={instanceType} taskId={taskId}
                 formDefinition={formDefinition} workflowDescription={WorkflowDescription}
                 wasSubmitted={wasSubmitted}>
-            </TaskForm>
-            <button onClick={wasSubmitted}>Close</button>
+            </TaskFormType>
         </ModalOverlay>
     );
 }
