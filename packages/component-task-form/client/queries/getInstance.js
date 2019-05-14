@@ -4,10 +4,9 @@ import { useQuery } from 'react-apollo-hooks';
 export default (instanceId, instanceType, fields, opts = {}) => {
 
     const queryOptions = {
+        ssr: false,
         suspend: false,
-        fetchPolicy: 'network-only',
-        partialRefetch: false
-        //fetchPolicy: 'cache-first'
+        fetchPolicy: 'network-only'
     };
 
     Object.assign(queryOptions, opts);
@@ -20,7 +19,7 @@ export default (instanceId, instanceType, fields, opts = {}) => {
     const filteredFields = fields.filter(f => f !== "id");
 
     const getInstanceQuery = gql`
-query GetInstance($id:ID) {
+query Get${instanceType.name}Instance($id:ID) {
   result: get${instanceType.name}(id:$id) {
     id
     tasks {
