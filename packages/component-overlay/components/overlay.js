@@ -2,6 +2,9 @@ import React from 'react';
 import Modal from 'react-modal';
 import styled from 'styled-components';
 
+import { FaTimes } from 'react-icons/fa';
+
+
 Modal.setAppElement(document.getElementById('root'));
 
 const customStyles = {
@@ -28,19 +31,35 @@ const customStyles = {
 };
 
 
+const OverlayCloseButton = styled.button`
+    border: none;
+    cursor: pointer;
+    
+    > img {
+        width: 20px;
+        height: 20px;
+        opacity: 0.5;
+    }
+`;
+
+
 function _OverlayHeader({className, heading, hasClose, close}) {
     return (
         <div className={className}>
-            <span>{heading}</span>
-            {hasClose ? <button onClick={close}>x</button> : null}
+            {heading ? <span>{heading}</span> : null}
+            {hasClose ? <OverlayCloseButton onClick={close}><img src="/images/close.svg" /></OverlayCloseButton> : null}
         </div>
     )
 }
 
 const OverlayHeader = styled(_OverlayHeader)`
 
-    margin: -20px;
-    padding: 20px;
+    margin-top: -20px;
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-bottom: 20px;
+    
+    padding: 10px 20px;
     border-bottom: 1px solid #d1d1d1;
     
     > span {
@@ -50,9 +69,9 @@ const OverlayHeader = styled(_OverlayHeader)`
         letter-spacing: 1px;
     }
 
-    button {
-        margin-right: 10px;
+    > button {
         float: right;
+        margin-top: 5px;
     }
 `;
 
@@ -61,7 +80,7 @@ const OverlayHeader = styled(_OverlayHeader)`
 function Overlay({children, heading, hasClose, close, style, ...rest}) {
     return (
         <Modal style={style || customStyles} {...rest}>
-            <OverlayHeader heading={"Assign New Award"} hasClose={hasClose} close={close} />
+            <OverlayHeader heading={heading} hasClose={hasClose} close={close} />
             {children}
         </Modal>
     );
