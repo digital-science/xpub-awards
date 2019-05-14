@@ -28,7 +28,7 @@ task AwardSubmission {
         awardeeAcceptances: [AwardeeAcceptance] <join-to-field:"awardSubmissionId">
     }
 
-    form "submission" {
+    form "submission" extend "MulitpleStages" {
 
         outcomes: [
             { "complete" => Complete },
@@ -37,20 +37,28 @@ task AwardSubmission {
         ]
 
         options: {
-           test: 12
+           heading: "Assign New Award"
         }
 
         elements: {
 
-            { AwardeesEditor => awardees, label:"Awarded to" }
+            { Stage, label:"Step 1: Award Details", children: {
 
-            { TextArea => citation, label:"Award citation" }
+                { TextArea => citation, label:"Award citation" }
 
-            { Date => date, label:"Date Awarded" }
+                { Date => date, label:"Date Awarded" }
 
-            { FileUploader => files, label:"Associated award files" }
+                { FileUploader => files, label:"Associated award files" }
 
-            { Button, default:true, outcome:"complete", label:"Submit for Awardee Acceptance" }
+            } }
+
+            { Stage, label:"Step 2: Select Awardees", children: {
+
+                { AwardeesEditor => awardees, label:"Awarded to" }
+
+                { StageButton, default:true, outcome:"complete", label:"Submit" }
+
+            } }
 
         }
     }
