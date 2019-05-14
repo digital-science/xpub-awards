@@ -5,9 +5,8 @@
 
 
 import React, { Fragment } from 'react';
-import { ConnectedRouter } from 'react-router-redux';
+import { BrowserRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Provider } from 'react-redux'
 import { ThemeProvider } from 'styled-components';
 import { ApolloProvider } from 'react-apollo';
 import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
@@ -19,7 +18,7 @@ import { getMainDefinition } from 'apollo-utilities';
 import { setContext } from 'apollo-link-context';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { Normalize } from 'styled-normalize';
-import StyleRoot from 'pubsweet-client/src/helpers/StyleRoot';
+//import StyleRoot from 'pubsweet-client/src/helpers/StyleRoot';
 
 import desc from './../config/description.json';
 import { WorkflowDescriptionContext, WorkflowDescription } from 'client-workflow-model';
@@ -66,7 +65,6 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
 
 const Root = ({
     makeApolloConfig,
-    store,
     history,
     routes,
     theme,
@@ -81,13 +79,11 @@ const Root = ({
             <WorkflowDescriptionContext.Provider value={clientWorkflowDescription}>
                 <ApolloProvider client={client}>
                     <ApolloHooksProvider client={client}>
-                        <Provider store={store}>
-                            <ConnectedRouter history={history}>
-                                <ThemeProvider theme={theme}>
-                                    {routes}
-                                </ThemeProvider>
-                            </ConnectedRouter>
-                        </Provider>
+                        <BrowserRouter>
+                            <ThemeProvider theme={theme}>
+                                {routes}
+                            </ThemeProvider>
+                        </BrowserRouter>
                     </ApolloHooksProvider>
                 </ApolloProvider>
             </WorkflowDescriptionContext.Provider>
@@ -100,7 +96,6 @@ const Root = ({
 Root.propTypes = {
     routes: PropTypes.node.isRequired,
     history: PropTypes.object.isRequired,
-    store: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
 };
 
