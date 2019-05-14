@@ -10,7 +10,9 @@ const _TextArea = ({children=null, ...rest}) => {
 const TextArea = BorderedElement(_TextArea);
 
 export default styled(TextArea)`
+    width: 100%;
     font-family: ProximaNovaLight;
     font-size: 16px;
     color: black;
+    box-sizing: border-box;
 `;
