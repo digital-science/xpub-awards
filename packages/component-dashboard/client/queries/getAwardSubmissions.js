@@ -22,6 +22,7 @@ query GetAwardSubmissions($active:Boolean) {
     date
     outcome
     files {
+      id
       fileName
       fileMimeType
     }
