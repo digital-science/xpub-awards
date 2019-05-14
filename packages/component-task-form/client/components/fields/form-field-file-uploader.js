@@ -6,42 +6,9 @@ import useConfirmUploadedFileMutation from './../../mutations/confirmUploadedFil
 import useSetInstanceAssociatedFilesMutation from './../../mutations/setInstanceAssociatedFiles';
 import withFormField from './withFormField';
 
-import humanFormatByteCount from './../../utils/humanFormatByteCount';
-
 import FileUploader from 'ds-awards-theme/components/file-uploader';
+import FileListing from 'ds-awards-theme/components/file-listing';
 import Label from 'ds-awards-theme/components/label';
-
-import { FaFilePdf, FaTimes } from 'react-icons/fa';
-
-import './form-field-file-uploader.css';
-
-
-
-function FileDownloadLink({ file, instanceId, instanceType, children }) {
-
-    // return <a href={generateDownloadLinkForSubmissionFile(submission, file)} target="_blank" rel="noopener noreferrer">{children}</a>;
-    return <a href={""} target="_blank" rel="noopener noreferrer">{children}</a>;
-}
-
-function FileUploadFileListing({ files, instanceId, instanceType, removeFile }) {
-
-    const listing = (files || []).map((file, index) =>
-        <li key={file.id}>
-            <div className="file-index">{index + 1}</div>
-            <div className="file-icon"><FaFilePdf /></div>
-            <div className="file-name">
-                <FileDownloadLink file={file} >{file.fileDisplayName}</FileDownloadLink> <span className="file-size">{humanFormatByteCount(file.fileByteSize)}</span>
-            </div>
-            <div className="file-remove"><FaTimes onClick={() => { return removeFile(file); }} /></div>
-        </li>
-    );
-
-    return (
-        <div className="uploaded-files-listing">
-            <ol style={{listStyle:"none", padding:0}}>{listing}</ol>
-        </div>
-    );
-}
 
 
 const FileUploaderHolder = styled.div`
@@ -54,8 +21,6 @@ const FileUploaderHolder = styled.div`
         padding: 5px;
     }
 `;
-
-
 
 
 function FormFieldFileUploader({ formData, binding, instanceId, instanceType, options = {} }) {
@@ -189,7 +154,7 @@ function FormFieldFileUploader({ formData, binding, instanceId, instanceType, op
                 >
                 </FileUploader>
 
-                <FileUploadFileListing files={fileListing} instanceId={instanceId} instanceType={instanceType} removeFile={removeFile} />
+                <FileListing files={fileListing} instanceId={instanceId} instanceType={instanceType} removeFile={removeFile} />
             </div>
         </FileUploaderHolder>
     );

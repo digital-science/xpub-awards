@@ -15,6 +15,7 @@ function _FileUploadGreeting({className, message}) {
         </div>);
 }
 const FileUploadGreeting = styled(_FileUploadGreeting)`
+
     font-family: ProximaNovaLight;
     padding: 10px;
     text-align: center;
@@ -44,6 +45,7 @@ function _FileUploadProgress({className, progress}) {
 }
 
 const FileUploadProgress = styled(_FileUploadProgress)`
+
     position: absolute;
     left: 0;
     right: 0;
@@ -96,7 +98,7 @@ const _FileUploader = ({greetingComponent, progressComponent, errorComponent, me
 export default styled(_FileUploader)`
     box-sizing: border-box;
 
-    width: 500px !important;
+    width: 100% !important;
     height: 40px !important;
     
     background: rgb(255,255,255);
