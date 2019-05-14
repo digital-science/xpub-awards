@@ -6,7 +6,11 @@
   "parser": "babel-eslint",
   "rules": {
     "camelcase": 0,
-    "indent": ["error", 4],
+    "indent": ["error", 4, {
+      "FunctionDeclaration": {"parameters": "first"},
+      "CallExpression": {"arguments": "first"},
+      "FunctionExpression": {"parameters": "first"}
+    }],
     "consistent-return": 0,
     "global-require": 0,
     "jsx-a11y/anchor-is-valid": 0,
