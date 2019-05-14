@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import theme from 'ds-awards-theme';
 import Root from './Root';
 //import { Root } from 'pubsweet-client';
-import createHistory from 'history/createBrowserHistory';
+import { createBrowserHistory } from 'history';
 
 // import { ModalProvider } from 'component-modal'
 
@@ -13,14 +13,8 @@ import Routes from './routes';
 
 // import * as journal from './config/journal'
 
-// wait for PS to stop supporting redux
-const store = {
-    subscribe: () => {},
-    dispatch: () => {},
-    getState: () => {}
-};
 
-const history = createHistory();
+const history = createBrowserHistory();
 
 const makeApolloConfig = ({ cache, link, ...config }) => {
     return {
@@ -38,7 +32,6 @@ const render = () => {
                 history={history}
                 makeApolloConfig={makeApolloConfig}
                 routes={<Routes />}
-                store={store}
                 theme={theme}
             />
             <div id="ps-modal-root" style={{ height: 0 }} />
