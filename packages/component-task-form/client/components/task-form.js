@@ -18,26 +18,11 @@ import pick from 'lodash/pick';
 export default function TaskForm({ instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted }) {
 
     const {fetchFields, topLevelFields} = resolveFieldsRequiredForForm(formDefinition.elements, FieldRegistry);
-
-    console.log(`\n---- TaskForm ------`);
-    const r = useGetInstanceQuery(instanceId, instanceType, fetchFields);
-    console.dir(r);
-    console.dir(fetchFields);
-    const { data, error, loading, refetch, networkStatus } = r;
-
-    //const { data, error, loading, refetch, networkStatus } = useGetInstanceQuery(instanceId, instanceType, fetchFields);
+    const { data, error, loading, refetch, networkStatus } = useGetInstanceQuery(instanceId, instanceType, fetchFields);
     const [formData, setFormData] = useState(null);
     const [showIsSaving, displayIsSavingMessage, removeIsSavingMessage] = useTimedMinimumDisplay(1500);
     const completeInstanceTask = useCompleteInstanceTask(instanceType);
     const updateInstance = useUpdateInstance(instanceType);
-
-    /*console.log("TaskForm ---");
-    console.log(`instanceId: ${instanceId}`);
-    console.log(`taskId: ${taskId}`);
-    console.dir(r);
-    console.dir(data);*/
-
-    console.log("networkStatus: " + networkStatus);
 
     function _updateInstanceFromFormData() {
 
@@ -64,7 +49,6 @@ export default function TaskForm({ instanceId, taskId, instanceType, formDefinit
     }
 
     const refetchFormData = () => {
-        console.log("refetch form data called");
         return refetch();
     };
 
@@ -72,7 +56,6 @@ export default function TaskForm({ instanceId, taskId, instanceType, formDefinit
     // new form data set with these initial values.
 
     useEffect(() => {
-        console.log("--- useEffect: update form data, data was changed");
         setFormData(new TaskFormData(pick(data.result, topLevelFields)));
     }, [data]);
 
