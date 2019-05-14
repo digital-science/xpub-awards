@@ -130,6 +130,8 @@ export default function useFormInstanceData(instanceId, taskId, instanceType, fo
 
         submitTaskOutcome,
         formData,
-        refetchFormData
+        refetchFormData,
+
+        fieldRegistry:FieldRegistry
     };
 };
