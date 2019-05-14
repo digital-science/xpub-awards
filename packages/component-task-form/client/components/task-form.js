@@ -4,7 +4,6 @@ import Spinner from 'ds-awards-theme/components/spinner';
 import useTimedMinimumDisplay from './../hooks/useTimedMinimumDisplay';
 import useFormInstanceData from './../hooks/useInstanceDataForForm';
 
-import FieldRegistry from './registry';
 import FieldListing from './field-listing';
 
 
@@ -13,7 +12,7 @@ export default function TaskForm({ instanceId, taskId, instanceType, formDefinit
     const [showIsSaving, displayIsSavingMessage, removeIsSavingMessage] = useTimedMinimumDisplay(1500);
 
     const fd = useFormInstanceData(instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave, displayIsSavingMessage, removeIsSavingMessage);
-    const {instance, error, loading, task, submitTaskOutcome, formData, refetchFormData} = fd;
+    const {instance, error, loading, task, submitTaskOutcome, formData, refetchFormData, fieldRegistry} = fd;
 
     if(loading) {
         return <div>Loading</div>;
@@ -41,10 +40,9 @@ export default function TaskForm({ instanceId, taskId, instanceType, formDefinit
             {/*<div>TaskId: {taskId}</div>*/}
 
             <div>
-                <FieldListing elements={formDefinition.elements} fieldRegistry={FieldRegistry} formData={formData} refetchFormData={refetchFormData}
+                <FieldListing elements={formDefinition.elements} fieldRegistry={fieldRegistry} formData={formData} refetchFormData={refetchFormData}
                     instanceId={instanceId} instanceType={instanceType} taskId={taskId} submitTaskOutcome={submitTaskOutcome} />
             </div>
-
         </div>
     ) : (
         <div>Loading</div>

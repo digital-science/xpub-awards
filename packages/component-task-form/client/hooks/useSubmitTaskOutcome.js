@@ -5,7 +5,7 @@ export default  function useSubmitTaskOutcome(instanceId, taskId, formDefinition
 
     const completeInstanceTask = useCompleteInstanceTask(instanceType);
 
-    const submitTaskOutcome = (outcomeType, options) => {
+    return (outcomeType, options) => {
 
         console.log("------");
         console.log("Submit task outcome: ");
@@ -43,6 +43,4 @@ export default  function useSubmitTaskOutcome(instanceId, taskId, formDefinition
             });
         }
     };
-
-    return submitTaskOutcome;
 }

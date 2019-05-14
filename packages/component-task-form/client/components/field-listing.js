@@ -31,5 +31,5 @@ function _FormFieldListing({ className, task, submission, elements, fieldRegistr
 }
 
 export default styled(_FormFieldListing)`
-    min-width: 500px;
+    max-width: 500px;
 `;
