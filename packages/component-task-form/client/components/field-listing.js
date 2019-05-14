@@ -1,7 +1,8 @@
 import React from 'react';
+import styled from 'styled-components';
 
 
-function FormFieldListing({ task, submission, elements, fieldRegistry, formData, submitTaskOutcome, instanceId, instanceType, taskId, refetchFormData }) {
+function _FormFieldListing({ className, task, submission, elements, fieldRegistry, formData, submitTaskOutcome, instanceId, instanceType, taskId, refetchFormData }) {
 
     if(!elements || !elements.length || !fieldRegistry || !formData || !instanceId || !instanceType) {
         return null;
@@ -22,11 +23,13 @@ function FormFieldListing({ task, submission, elements, fieldRegistry, formData,
     });
 
     return (
-        <div className="form-field-listing">
+        <div className={`${className || ''} form-field-listing`}>
             {items}
         </div>
     );
 
 }
 
-export default FormFieldListing;
+export default styled(_FormFieldListing)`
+    min-width: 500px;
+`;
