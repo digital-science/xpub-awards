@@ -7,6 +7,7 @@ import useFormInstanceData from './../hooks/useInstanceDataForForm';
 import FieldListing from './field-listing';
 
 import Button from 'ds-awards-theme/components/button';
+import Spinner from 'ds-awards-theme/components/spinner';
 
 
 /* Form has multiple stages, the form definition will consist of a collection of "Stages" and each of these will be used
@@ -60,13 +61,13 @@ function MultipleStageTaskForm({instanceId, taskId, instanceType, formDefinition
     }, [stages]);
 
 
-    const [showIsSaving, displayIsSavingMessage, removeIsSavingMessage] = useTimedMinimumDisplay(1500);
+    const [showIsSaving, displayIsSavingMessage, removeIsSavingMessage] = useTimedMinimumDisplay(1000);
 
     const fd = useFormInstanceData(instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave, displayIsSavingMessage, removeIsSavingMessage);
     const {instance, error, loading, task, submitTaskOutcome, formData, refetchFormData, fieldRegistry} = fd;
 
 
-
+    // FIXME: placeholder messages, formatting applied below
     if(loading) {
         return <div>Loading</div>;
     }
@@ -104,6 +105,7 @@ function MultipleStageTaskForm({instanceId, taskId, instanceType, formDefinition
         <Fragment>
             <StageHolder>
                 {currentStage.options && currentStage.options.label ? <StageLabel className="stage-label">{currentStage.options.label}</StageLabel> : null}
+                {showIsSaving ? <SpinnerHolder><Spinner small={true} message={"Saving\u2026"} /></SpinnerHolder> : null}
                 <div>
                     {/* Field Listing displayed for the current  */}
                     <FieldListing elements={currentStage.elements} fieldRegistry={fieldRegistry} formData={formData} refetchFormData={refetchFormData}
@@ -138,13 +140,20 @@ function MultipleStageTaskForm({instanceId, taskId, instanceType, formDefinition
 const StageHolder = styled.div`
     min-width: 750px;
     margin-bottom: 20px;
+    position: relative;
+`;
+
+const SpinnerHolder = styled.div`
+    position: absolute;
+    top: 0;
+    right: 0;
 `;
 
 
 const StageLabel = styled.div`
     font-size: 19px;
     /*font-family: NovcentoSansWideBook;*/
-    font-family: ProximaNovaLight;
+    font-family: ProximaNovaLight, sans-serif;
     text-transform: uppercase;
     margin-bottom: 14px;
 `;
@@ -153,10 +162,7 @@ const StageLabel = styled.div`
 
 const StagesButtonHolder = styled.div`
     padding: 20px;
-    margin-top: 20px;
-    margin-bottom: -20px;
-    margin-left: -20px;
-    margin-right: -20px;
+    margin: 20px -20px -20px;
     
     display: flex;
     justify-content: flex-end;
