@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import useCreateFileUploadSignedUrlMutation from './../../mutations/createFileUploadSignedUrl';
 import useConfirmUploadedFileMutation from './../../mutations/confirmUploadedFile';
 import useSetInstanceAssociatedFilesMutation from './../../mutations/setInstanceAssociatedFiles';
-import withFormField from './withFormField';
+import withFormField, { fetchFields } from './withFormField';
 
 import FileUploader from 'ds-awards-theme/components/file-uploader';
 import FileListing from 'ds-awards-theme/components/file-listing';
@@ -168,13 +168,7 @@ export default withFormField(FormFieldFileUploader, (element) => {
     // The top level field that we are interested in (that comes in via the formData data set is the binding values).
 
     const topLevel = element.binding;
-    const fetch = `${element.binding} {
-        id
-        fileName
-        fileDisplayName
-        fileMimeType
-        fileByteSize
-    }`;
+    const fetch = fetchFields(element.binding, `id, fileName, fileDisplayName, fileMimeType, fileByteSize`);
 
     return {topLevel, fetch};
 });

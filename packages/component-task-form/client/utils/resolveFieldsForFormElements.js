@@ -1,4 +1,30 @@
 import FieldRegistry from './../components/registry';
+import { mergeFetchFields } from './../components/fields/withFormField';
+
+
+function _bindingStringToFetchFields(binding) {
+
+    let topLevel = null;
+    let current;
+    let currentKey;
+
+    binding.split('.').forEach(v => {
+
+        const level = {};
+        level[v] = null;
+
+        if(!topLevel) {
+            topLevel = level;
+        } else {
+            current[currentKey] = level;
+        }
+
+        current = level;
+        currentKey = v;
+    });
+
+    return topLevel;
+}
 
 
 export default function resolveFieldsForFormElements(elements, registry=FieldRegistry) {
@@ -22,7 +48,7 @@ export default function resolveFieldsForFormElements(elements, registry=FieldReg
     }
 
     function addToFetchFields(v) {
-        _addToFieldSet(fetchFields, v);
+        mergeFetchFields(fetchFields, v);
     }
 
     function addToTopLevelFields(v) {
@@ -42,7 +68,7 @@ export default function resolveFieldsForFormElements(elements, registry=FieldReg
                 const field = component.bindingResolver(e);
 
                 if(typeof field === "string") {
-                    addToFetchFields(field);
+                    addToFetchFields(_bindingStringToFetchFields(field));
                     addToTopLevelFields(field);
                 } else if(field) {
                     addToFetchFields(field.fetch);
@@ -59,5 +85,5 @@ export default function resolveFieldsForFormElements(elements, registry=FieldReg
 
     _resolveForElements(elements);
 
-    return {fetchFields:Object.keys(fetchFields), topLevelFields:Object.keys(topLevelFields)};
+    return {fetchFields:fetchFields, topLevelFields:Object.keys(topLevelFields)};
 }

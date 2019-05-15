@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react';
 import Spinner from 'ds-awards-theme/components/spinner';
 import pick from 'lodash/pick';
 
-import { withFormField, useTimedMinimumDisplay } from 'component-task-form/client';
+import { withFormField, useTimedMinimumDisplay, fetchFields } from 'component-task-form/client';
 import { FaTimes } from 'react-icons/fa';
 
 import useSetInstanceAssociatedAwardeesMutation from './mutations/setInstanceAssociatedAwardees';
@@ -336,13 +336,7 @@ export default withFormField(FormFieldAwardeesEditor, (element) => {
     // The top level field that we are interested in (that comes in via the formData data set is the binding values).
 
     const topLevel = element.binding;
-    const fetch = `${element.binding} {
-        id
-        firstName
-        lastName
-        affiliation
-        email
-    }`;
+    const fetch = fetchFields(element.binding, `id, firstName, lastName, affiliation, email`);
 
     return {topLevel, fetch};
 });

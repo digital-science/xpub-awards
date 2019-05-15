@@ -17,9 +17,9 @@ import debounce from "lodash/debounce";
 /* Hook that does the heavy lifting when setting up a form. It will resolve the set of data fields required to display
  * the form (this includes any complex objects with sub-fields etc). When a listing of fields is obtained it will
  * then fetch the instance data from the GraphQL endpoint.
- * The hook then configures updating the instance (via the GraphQL endpoint) when form data has been changed. Automatic
- * updates (debounced) can also be configured, with UI notifications of updates available via the "SavingMessage"
- * callbacks provided to the hook.
+ * The hook then configures updating the instance (via another GraphQL endpoint) when form data has been changed. Automatic
+ * updates (debounced) can also be configured, with UI notifications of updates available via the "SavingMessage" related
+ * callbacks provided from the hook.
  * */
 
 

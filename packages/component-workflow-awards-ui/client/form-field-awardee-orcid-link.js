@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import config from 'config';
 
-import { withFormField, withFormFieldData } from 'component-task-form/client';
+import {withFormField, fetchFields, withFormFieldData} from 'component-task-form/client';
 import useUnlinkIdentityFromAwardee from './mutations/unlinkIdentityFromAwardee';
 
 import './form-field-awardee-orcid-link.css';
@@ -96,25 +96,13 @@ export default withFormField(FormFieldAwardeeORCIDLink, (element) => {
     // From the GraphQL endpoint we want to fetch the file set along with the associated name, size, type etc.
     // The top level field that we are interested in (that comes in via the formData data set is the binding values).
 
-    if(!element.binding) {
+    if (!element.binding) {
         return null;
     }
 
     const topLevel = element.binding;
-    const fetch = `${element.binding} {
-      id
-      firstName
-      lastName
-      affiliation
-      email
-      identity {
-        id
-        type
-        identityId
-        displayName
-        displayAffiliation
-      }
-    }`;
+    const fetch = fetchFields(element.binding, `id, firstName, lastName, affiliation, email, identity`);
+    fetch[element.binding].identity = fetchFields(`id, type, identityId, displayName, displayAffiliation`);
 
     return {topLevel, fetch};
 });
