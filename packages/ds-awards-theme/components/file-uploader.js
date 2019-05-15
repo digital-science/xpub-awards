@@ -16,13 +16,13 @@ function _FileUploadGreeting({className, message}) {
 }
 const FileUploadGreeting = styled(_FileUploadGreeting)`
 
-    font-family: ProximaNovaLight;
+    font-family: ProximaNovaLight, sans-serif;
     padding: 10px;
     text-align: center;
     font-size: 15px;
     
     b {
-        font-family: ProximaNovaLight;
+        font-family: ProximaNovaLight, sans-serif;
     }
     
     svg {
