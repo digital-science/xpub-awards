@@ -154,7 +154,7 @@ function FormFieldFileUploader({ formData, binding, instanceId, instanceType, op
                 >
                 </FileUploader>
 
-                <FileListing files={fileListing} instanceId={instanceId} instanceType={instanceType} removeFile={removeFile} />
+                {fileListing && fileListing.length ? <FileListing files={fileListing} instanceId={instanceId} instanceType={instanceType} removeFile={removeFile} /> : null}
             </div>
         </FileUploaderHolder>
     );
