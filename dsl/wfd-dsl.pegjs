@@ -135,7 +135,7 @@ typeName "type name"
   = first:[a-z_$]i rest:[a-z0–9_$]i* { return first + rest.join("") }
 
 targetModelName "target model property name"
-  = first:[a-z_$]i rest:[a-z0–9_$]i* { return first + rest.join("") }
+  = first:[a-z_$]i rest:[a-z0–9_$.]i* { return first + rest.join("") }
 
 
 // ----- Top Level -----
