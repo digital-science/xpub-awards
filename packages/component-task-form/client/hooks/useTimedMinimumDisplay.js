@@ -31,7 +31,7 @@ function useTimedMinimumDisplay(minimumDisplayTime = 1500) {
             return;
         }
 
-        setTiming(1500 - difference);
+        setTiming(minimumDisplayTime - difference);
 
     }, [displayRef]);
 
