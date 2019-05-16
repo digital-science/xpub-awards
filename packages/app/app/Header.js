@@ -6,7 +6,7 @@ const Header = styled.header`
     line-height: 68px;
     margin-left: 30px;
     font-size: 36px;
-    font-family: NovcentoSansWideLight;
+    font-family: NovcentoSansWideLight, sans-serif;
     text-transform: uppercase;
     color: #3e3476;
 `;
@@ -28,7 +28,7 @@ const Person = styled.div`
         color: black;
         text-transform: none;
         font-size: 15px;
-        font-family: AcuminProLight;
+        font-family: AcuminProLight, sans-serif;
             
         height: 100%;
         display: inline-block;
@@ -36,14 +36,16 @@ const Person = styled.div`
     }
 `;
 
-export default () => {
+export default ({hideUser=false}) => {
     return (
         <Header>
             Award Submission Portal
-            <Person>
-                <img src="/images/person.svg" />
-                <span>Jared Watts</span>
-            </Person>
+            {!hideUser ? (
+                <Person>
+                    <img src="/images/person.svg" />
+                    <span>Jared Watts</span>
+                </Person>)
+                : null}
         </Header>
     );
 };

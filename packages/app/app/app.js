@@ -2,17 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import theme from 'ds-awards-theme';
 import Root from './Root';
-//import { Root } from 'pubsweet-client';
 import { createBrowserHistory } from 'history';
-
-// import { ModalProvider } from 'component-modal'
-
 import Routes from './routes';
-// import { JournalProvider } from 'xpub-journal'
-// import { JournalProvider as HindawiJournalProvider } from 'component-journal-info'
 
-// import * as journal from './config/journal'
 
+import SetupWorkflowAwardsUI from 'component-workflow-awards-ui/client/setup';
+SetupWorkflowAwardsUI();
 
 const history = createBrowserHistory();
 
@@ -41,6 +36,7 @@ const render = () => {
 };
 
 render();
+
 
 /*
 const render = () => {

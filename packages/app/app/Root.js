@@ -26,6 +26,7 @@ import { WorkflowDescriptionContext, WorkflowDescription } from 'client-workflow
 const clientWorkflowDescription = new WorkflowDescription(desc);
 
 
+
 const makeApolloClient = (makeConfig, connectToWebSocket) => {
     const httpLink = createHttpLink();
     const authLink = setContext((_, { headers }) => {
@@ -58,7 +59,7 @@ const makeApolloClient = (makeConfig, connectToWebSocket) => {
     }
     const config = {
         link,
-        cache: new InMemoryCache(),
+        cache: new InMemoryCache()
     };
     return new ApolloClient(makeConfig ? makeConfig(config) : config)
 };

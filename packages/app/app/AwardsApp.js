@@ -19,25 +19,14 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
-/*
-const App = ({ autosave, journal = {}, goTo, children }) => (
+const App = ({ children, hideSidebar, hideUser }) => (
     <Fragment>
         <GlobalStyles />
-        <Container>
-            <PageContent>{children}</PageContent>
-        </Container>
-    </Fragment>
-);
-*/
-
-const App = ({ autosave, journal = {}, goTo, children }) => (
-    <Fragment>
-        <GlobalStyles />
-        <Header/>
-        <div className="HolyGrail-body">
-            <main className="HolyGrail-content">{children}</main>
-            <Sidebar>Nav</Sidebar>
-        </div>
+        <Header hideUser={hideUser}/>
+        <BodyContainer>
+            <ContentContainer>{children}</ContentContainer>
+            {hideSidebar ? null : <Sidebar>Nav</Sidebar>}
+        </BodyContainer>
         <Footer/>
     </Fragment>
 );
@@ -45,81 +34,22 @@ const App = ({ autosave, journal = {}, goTo, children }) => (
 
 export default DragDropContext(HTML5Backend)(App);
 
-const Container = styled.div`
+
+const BodyContainer = styled.div`
     display: flex;
+    flex: 1 0 auto; /* 2 */
     flex-direction: column;
-    height: 100vh;
+    background-color: #ebebeb;
+    
+    @media (min-width: 768px) {
+        flex-direction: row;
+        min-height: calc(100vh - 68px);
+    }
 `;
 
-const PageContent = styled.main`
-    flex: 1;
-    overflow-y: auto;
+const ContentContainer = styled.main`
+    @media (min-width: 768px) {
+        flex: 1;
+        margin: 0;
+    }
 `;
-
-/*
-
-import React, { Fragment } from 'react'
-import { Route } from 'react-router'
-import { DragDropContext } from 'react-dnd'
-import { Footer } from 'component-hindawi-ui'
-import HTML5Backend from 'react-dnd-html5-backend'
-import styled, { createGlobalStyle } from 'styled-components'
-import { AppBar } from 'component-authentication/client'
-import { AutosaveIndicator, SubmitDraft } from 'component-submission/client'
-import { queries } from 'component-dashboard/client'
-
-const GlobalStyles = createGlobalStyle`
-  body {
-    height: 100vh;
-    margin: 0;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-`
-
-const HideOnPath = ({ component: Component, pathname }) => (
-  <Route
-    render={({ location }) => {
-      if (location.pathname === pathname) return null
-      return <Component />
-    }}
-  />
-)
-
-const App = ({ autosave, journal = {}, goTo, children }) => (
-  <Fragment>
-    <GlobalStyles />
-    <Container>
-      <HideOnPath
-        component={() => (
-          <AppBar
-            autosaveIndicator={AutosaveIndicator}
-            queries={{
-              getManuscripts: queries.getManuscripts,
-            }}
-            submitButton={SubmitDraft}
-          />
-        )}
-        pathname="/404"
-      />
-
-      <PageContent>{children}</PageContent>
-
-      <HideOnPath component={Footer} pathname="/404" />
-    </Container>
-  </Fragment>
-)
-
-export default DragDropContext(HTML5Backend)(App)
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-`
-
-const PageContent = styled.main`
-  flex: 1;
-  overflow-y: auto;
-`
-*/
