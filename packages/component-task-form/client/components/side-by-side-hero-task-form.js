@@ -123,7 +123,7 @@ const PanelHeading = styled(({className, heading}) => {
 const PanelHolder = styled.div`
   display: flex;
   flex-direction: row;
-  max-width: 900px;
+  max-width: 940px;
   margin: 0 auto;
 `;
 
