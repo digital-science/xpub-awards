@@ -9,7 +9,7 @@ import FieldListing from './field-listing';
 
 export default function TaskForm({ instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave=true }) {
 
-    const [showIsSaving, displayIsSavingMessage, removeIsSavingMessage] = useTimedMinimumDisplay(1500);
+    const [showIsSaving, displayIsSavingMessage, removeIsSavingMessage] = useTimedMinimumDisplay(1000);
 
     const fd = useFormInstanceData(instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave, displayIsSavingMessage, removeIsSavingMessage);
     const {instance, error, loading, task, submitTaskOutcome, formData, refetchFormData, fieldRegistry} = fd;
