@@ -10,7 +10,7 @@ import AwardAcceptanceTaskForm from './AwardAcceptanceTaskForm';
 const Routes = () => (
 
     <Switch>
-        <Route path="/award/:instanceId/acceptance/:taskId" render={props=> {
+        <Route path="/award/:instanceId/acceptance" render={props=> {
             return (
                 <AwardsApps hideSidebar={true} hideUser={true}>
                     <AwardAcceptanceTaskForm {...props} />

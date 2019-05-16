@@ -3,6 +3,8 @@ import WorkflowTaskFormHero from './WorkflowTaskFormHero';
 
 function AwardAcceptanceTaskForm({ match, history }) {
 
+    // Hard-code the task and task name
+
     const type = 'awardee-acceptance';
     const taskName = 'acceptance';
 
