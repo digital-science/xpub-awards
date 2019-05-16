@@ -116,7 +116,11 @@ task AwardeeAcceptance {
         publishingOutcome: AwardeePublishingOutcome <state, default:AwardeePublishingOutcome.Unknown>
     }
 
-    form "acceptance" {
+    form "acceptance" extend "SideBySideHeroPanels" {
+
+        options: {
+           heading: "Accept Award"
+        }
 
         outcomes: [
             {
@@ -135,13 +139,34 @@ task AwardeeAcceptance {
 
         elements: {
 
-            { AwardeeORCIDIdentityLink => awardee, required:true }
+            { Panel, heading:"Award Details", children:{
 
-            { TextArea => comments, label:"Comments" }
+                { StaticText => awardSubmission.citation, label:"Award Citation" }
 
-            { Button, default:true, outcome:"accept", label:"Accept Award" }
+                { StaticText => awardSubmission.date, label:"Date", format:"MMM DD, YYYY" }
 
-            { Button, outcome:"reject", label:"Reject Award" }
+                { AwardeeListing => awardSubmission.awardees, label:"Awarded to" }
+
+                { FilesListing => awardSubmission.files, label:"Associated files and media" }
+
+            } }
+
+            { Panel, heading:"Your Details", children:{
+
+                { AwardeeDetails => awardee, label:"Your Particulars" }
+
+                { AwardeeORCIDIdentityLink => awardee, label:"Your ORCID details", required:true }
+
+                { TextArea => comments, label:"Comments" }
+
+            } }
+
+            { DecisionPanel, children:{
+
+                { Button, outcome:"reject", label:"Reject Award" }
+                { Button, default:true, outcome:"accept", label:"Accept Award" }
+
+            } }
 
         }
     }
