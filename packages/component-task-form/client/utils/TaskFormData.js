@@ -1,5 +1,14 @@
 import EventEmitter from 'event-emitter';
 
+
+function _get(obj, key) {
+    if(obj && obj.hasOwnProperty(key)) {
+        return obj[key];
+    }
+    return null;
+}
+
+
 class TaskFormData {
 
     constructor(initialData = {}) {
@@ -10,6 +19,21 @@ class TaskFormData {
     }
 
     getFieldValue(fieldID) {
+
+        if(fieldID.indexOf('.') !== -1) {
+            const path = fieldID.split('.');
+            let obj =  (this._modifiedFields.hasOwnProperty(path[0]) ? this._modifiedFields : this._defaultValues);
+
+            for(let i = 0; i < path.length; i++) {
+                obj = _get(obj, path[i]);
+                if(!obj) {
+                    break;
+                }
+            }
+
+            return obj;
+        }
+
         if(this._modifiedFields.hasOwnProperty(fieldID)) {
             return this._modifiedFields[fieldID];
         }
@@ -17,6 +41,11 @@ class TaskFormData {
     }
 
     setFieldValue(fieldID, value) {
+
+        if(fieldID.indexOf('.') !== -1) {
+            throw new Error(`TaskFormData - setFieldValue doesn't support field paths (${fieldID})`);
+        }
+
         if(this._defaultValues.hasOwnProperty(fieldID) && this._defaultValues[fieldID] === value) {
             delete this._modifiedFields[fieldID];
             this.emit(`field.${fieldID}`, this, fieldID, value);
@@ -32,6 +61,10 @@ class TaskFormData {
     }
 
     resetFieldValue(fieldID) {
+
+        if(fieldID.indexOf('.') !== -1) {
+            throw new Error(`TaskFormData - resetFieldValue doesn't support field paths (${fieldID})`);
+        }
 
         if(!this._modifiedFields.hasOwnProperty(fieldID)) {
             return;
