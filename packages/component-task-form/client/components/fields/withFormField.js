@@ -1,11 +1,15 @@
 import React from "react";
-import './form-field.css';
+import styled from 'styled-components';
 
+const FormFieldHolder = styled.div`
+    margin-top: 5px;
+    margin-bottom: 15px;
+`;
 
 export default function withFormField(f, bindingResolver) {
 
     const r = function(props) {
-        return <div className="form-field">{f(props)}</div>
+        return <FormFieldHolder className="form-field">{f(props)}</FormFieldHolder>
     };
 
     if(!bindingResolver) {
@@ -36,7 +40,15 @@ function fetchFields(binding, fields) {
         f[field.trim()] = null;
     });
 
-    r[binding] = f;
+    let last = r;
+    const p = binding.split(".");
+
+    for(let i = 0; i <= p.length - 2; i++) {
+        last[p[i]] = {};
+        last = last[p[i]];
+    }
+    last[p[p.length - 1]] = f;
+
     return r;
 }
 

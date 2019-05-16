@@ -6,7 +6,7 @@ export default function withFormFieldData(formData, binding, fallbackValue=null)
     const [field, setField] = useState(fallbackValue);
 
     const formDataWasChanged = function _formDataWasChanged(form, field, v) {
-        setField(formData.getFieldValue(field) || []);
+        setField(formData.getFieldValue(field) || fallbackValue);
     };
 
     useEffect(() => {
@@ -15,11 +15,13 @@ export default function withFormFieldData(formData, binding, fallbackValue=null)
             return;
         }
 
-        formData.on(`field.${binding}`, formDataWasChanged);
+        const simpleBinding = binding.split('.')[0];
+
+        formData.on(`field.${simpleBinding}`, formDataWasChanged);
         setField(formData.getFieldValue(binding) || fallbackValue);
 
         return function cleanup() {
-            formData.off(`field.${binding}`, formDataWasChanged);
+            formData.off(`field.${simpleBinding}`, formDataWasChanged);
         };
 
     }, [formData, binding]);

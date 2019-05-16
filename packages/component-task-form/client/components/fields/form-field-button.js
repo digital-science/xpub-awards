@@ -1,7 +1,6 @@
 import React from 'react';
+import Button from 'ds-awards-theme/components/button';
 import withFormField from './withFormField';
-
-import './form-field-button.css';
 
 
 function FormFieldButton({submitTaskOutcome, options}) {
@@ -13,9 +12,9 @@ function FormFieldButton({submitTaskOutcome, options}) {
     }
 
     return (
-        <button className={"form-field-button" + (options.default ? " default" : "")}
+        <Button default={options.default || false} className={"form-field-button"}
             onClick={() => {handleSubmit(options.outcome)}}>{options.label}
-        </button>
+        </Button>
     );
 }
 
