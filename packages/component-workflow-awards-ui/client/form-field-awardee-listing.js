@@ -1,5 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import withFormField, {fetchFields} from "component-task-form/client/components/fields/withFormField";
+import styled from 'styled-components';
+
+import Label from 'ds-awards-theme/components/label';
+import AvatarAwardeePerson from './avatar-awardee-person';
 
 
 
@@ -28,9 +32,32 @@ function FormFieldAwardeeListing({formData, binding, instanceId, instanceType, r
 
     }, [formData, binding]);
 
+    const label = options.label ? <Label>{options.label}</Label> : null;
 
-    return <ol>{awardeesListing.map(awardee => <li key={awardee.id}>{awardee.firstName} {awardee.lastName}</li>)}</ol>
+    return (
+        <Fragment>
+            {label}
+            <AwardeeListingHolder>
+                {awardeesListing.map(awardee => <li key={awardee.id}><AvatarAwardeePerson awardee={awardee} /></li>)}
+            </AwardeeListingHolder>
+        </Fragment>
+    );
 }
+
+const AwardeeListingHolder = styled.ol`
+  
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    
+    >:first-child {
+      margin-top: 5px;
+    }
+    
+    > li {
+      margin-bottom: 5px;
+    }
+`;
 
 
 
