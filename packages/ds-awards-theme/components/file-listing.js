@@ -5,8 +5,9 @@ import { FaFilePdf, FaTimes } from 'react-icons/fa';
 import humanFormatByteCount from "../helpers/humanFormatByteCount";
 
 
-function _FileDownloadLink({ className, file, instanceId, instanceType, children }) {
+function _FileDownloadLink({ className, file, children }) {
 
+    // FIXME: need to generate proper download links for files from the GraphQL endpoint
     // return <a href={generateDownloadLinkForSubmissionFile(submission, file)} target="_blank" rel="noopener noreferrer">{children}</a>;
     return <a className={className} href={""} target="_blank" rel="noopener noreferrer">{children}</a>;
 }
@@ -21,7 +22,7 @@ const FileDownloadLink = styled(_FileDownloadLink)`
 `;
 
 
-function _FileUploadFileListing({ className, files, instanceId, instanceType, removeFile, linkForFile, fileDownloadLinkComponent }) {
+function _FileUploadFileListing({ className, files, removeFile, linkForFile, fileDownloadLinkComponent }) {
 
     const DownloadLink = fileDownloadLinkComponent || FileDownloadLink;
 
@@ -35,7 +36,7 @@ function _FileUploadFileListing({ className, files, instanceId, instanceType, re
                 </DownloadLink>
                 <span className="file-size">{humanFormatByteCount(file.fileByteSize)}</span>
             </div>
-            <div className="file-remove"><FaTimes onClick={() => { return removeFile(file); }} /></div>
+            {removeFile ? <div className="file-remove"><FaTimes onClick={() => { return removeFile(file); }} /></div> : null}
         </li>
     );
 
@@ -48,7 +49,7 @@ function _FileUploadFileListing({ className, files, instanceId, instanceType, re
 
 export default styled(_FileUploadFileListing)`
 
-    font-family: ProximaNovaLight;
+    font-family: ProximaNovaLight, sans-serif;
     font-size: 15px;
 
     ol {
