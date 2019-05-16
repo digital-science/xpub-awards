@@ -16,7 +16,7 @@ import Spinner from 'ds-awards-theme/components/spinner';
 
 
 
-function MultipleStageTaskForm({instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave=true}) {
+function MultipleStageTaskForm({instanceId, taskId, taskName, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave=true}) {
 
     const elements = formDefinition ? formDefinition.elements : null;
     const stages = useMemo(() => {
@@ -63,8 +63,8 @@ function MultipleStageTaskForm({instanceId, taskId, instanceType, formDefinition
 
     const [showIsSaving, displayIsSavingMessage, removeIsSavingMessage] = useTimedMinimumDisplay(1000);
 
-    const fd = useFormInstanceData(instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave, displayIsSavingMessage, removeIsSavingMessage);
-    const {instance, error, loading, task, submitTaskOutcome, formData, refetchFormData, fieldRegistry} = fd;
+    const fd = useFormInstanceData({instanceId, taskId, taskName, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave, displayIsSavingMessage, removeIsSavingMessage});
+    const {instance, error, loading, task, resolvedTaskId, submitTaskOutcome, formData, refetchFormData, fieldRegistry} = fd;
 
 
     // FIXME: placeholder messages, formatting applied below
@@ -109,7 +109,7 @@ function MultipleStageTaskForm({instanceId, taskId, instanceType, formDefinition
                 <div>
                     {/* Field Listing displayed for the current  */}
                     <FieldListing elements={currentStage.elements} fieldRegistry={fieldRegistry} formData={formData} refetchFormData={refetchFormData}
-                        instanceId={instanceId} instanceType={instanceType} taskId={taskId} submitTaskOutcome={submitTaskOutcome} />
+                        instanceId={instanceId} instanceType={instanceType} taskId={resolvedTaskId} submitTaskOutcome={submitTaskOutcome} />
                 </div>
             </StageHolder>
 

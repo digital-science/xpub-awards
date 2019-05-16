@@ -25,7 +25,7 @@ function WorkflowPrimaryTask({ match, history }) {
             <br />
             <br />
             <TaskForm instanceId={instanceId} instanceType={instanceType} taskId={taskId}
-                formDefinition={formDefinition} workflowDescription={WorkflowDescription}
+                formDefinition={formDefinition} workflowDescription={WorkflowDescription} taskName={taskName}
                 wasSubmitted={wasSubmitted}>
             </TaskForm>
         </div>

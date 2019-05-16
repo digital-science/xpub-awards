@@ -7,12 +7,13 @@ import useFormInstanceData from './../hooks/useInstanceDataForForm';
 import FieldListing from './field-listing';
 
 
-export default function TaskForm({ instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave=true }) {
+export default function TaskForm({ instanceId, taskId, taskName, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave=true }) {
 
     const [showIsSaving, displayIsSavingMessage, removeIsSavingMessage] = useTimedMinimumDisplay(1000);
 
-    const fd = useFormInstanceData(instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave, displayIsSavingMessage, removeIsSavingMessage);
-    const {instance, error, loading, task, submitTaskOutcome, formData, refetchFormData, fieldRegistry} = fd;
+    const fd = useFormInstanceData({instanceId, taskId, taskName, instanceType, formDefinition, workflowDescription, wasSubmitted,
+        autoSave, displayIsSavingMessage, removeIsSavingMessage});
+    const {instance, error, loading, task, resolvedTaskId, submitTaskOutcome, formData, refetchFormData, fieldRegistry} = fd;
 
     if(loading) {
         return <div>Loading</div>;
@@ -36,12 +37,9 @@ export default function TaskForm({ instanceId, taskId, instanceType, formDefinit
                 <Spinner /> <span>Saving&hellip;</span>
             </div>
 
-            {/*<div>InstanceId: {instanceId}</div>*/}
-            {/*<div>TaskId: {taskId}</div>*/}
-
             <div>
                 <FieldListing elements={formDefinition.elements} fieldRegistry={fieldRegistry} formData={formData} refetchFormData={refetchFormData}
-                    instanceId={instanceId} instanceType={instanceType} taskId={taskId} submitTaskOutcome={submitTaskOutcome} />
+                    instanceId={instanceId} instanceType={instanceType} taskId={resolvedTaskId} submitTaskOutcome={submitTaskOutcome} />
             </div>
         </div>
     ) : (

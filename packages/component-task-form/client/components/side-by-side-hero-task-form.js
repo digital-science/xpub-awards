@@ -7,12 +7,13 @@ import useFormInstanceData from './../hooks/useInstanceDataForForm';
 import FieldListing from './field-listing';
 
 
-export default function SideBySideHeroTaskForm({ instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave=true }) {
+export default function SideBySideHeroTaskForm({ instanceId, taskId, taskName, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave=true }) {
 
     const [showIsSaving, displayIsSavingMessage, removeIsSavingMessage] = useTimedMinimumDisplay(1500);
 
-    const fd = useFormInstanceData(instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted, autoSave, displayIsSavingMessage, removeIsSavingMessage);
-    const {instance, error, loading, task, submitTaskOutcome, formData, refetchFormData, fieldRegistry} = fd;
+    const fd = useFormInstanceData({instanceId, taskId, taskName, instanceType, formDefinition, workflowDescription, wasSubmitted,
+        autoSave, displayIsSavingMessage, removeIsSavingMessage});
+    const {instance, error, loading, task, resolvedTaskId, submitTaskOutcome, formData, refetchFormData, fieldRegistry} = fd;
 
     const elements = formDefinition ? formDefinition.elements : null;
     const {panels, decisionPanel} = useMemo(() => {
@@ -50,6 +51,7 @@ export default function SideBySideHeroTaskForm({ instanceId, taskId, instanceTyp
     }
 
     if(!task) {
+        console.dir(task);
         return <div>Task Not Found</div>
     }
 
@@ -76,7 +78,7 @@ export default function SideBySideHeroTaskForm({ instanceId, taskId, instanceTyp
             {decisionPanel ? (
                 <DecisionPanelHolder>
                     <DecisionFieldListing elements={decisionPanel.children} fieldRegistry={fieldRegistry} formData={formData} refetchFormData={refetchFormData}
-                        instanceId={instanceId} instanceType={instanceType} taskId={taskId} submitTaskOutcome={submitTaskOutcome} />
+                        instanceId={instanceId} instanceType={instanceType} taskId={resolvedTaskId} submitTaskOutcome={submitTaskOutcome} />
                 </DecisionPanelHolder>
             ) : null}
 

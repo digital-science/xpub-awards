@@ -26,7 +26,7 @@ function WorkflowTaskFormHero({ match, history }) {
     return (
         <WorkflowTaskFormHeroHolder>
             {heading ? <WorkflowHeroHeading>{heading}</WorkflowHeroHeading> : null}
-            <TaskFormType instanceId={instanceId} instanceType={instanceType} taskId={taskId}
+            <TaskFormType instanceId={instanceId} instanceType={instanceType} taskId={taskId} taskName={taskName}
                 formDefinition={formDefinition} workflowDescription={WorkflowDescription}
                 wasSubmitted={wasSubmitted}>
             </TaskFormType>

@@ -23,8 +23,8 @@ import debounce from "lodash/debounce";
  * */
 
 
-export default function useFormInstanceData(instanceId, taskId, instanceType, formDefinition, workflowDescription, wasSubmitted,
-                                            enableAutoSave=true, displayIsSavingMessage=null, removeIsSavingMessage=null) {
+export default function useFormInstanceData({instanceId, taskId, taskName, instanceType, formDefinition, workflowDescription, wasSubmitted,
+                                             enableAutoSave=true, displayIsSavingMessage=null, removeIsSavingMessage=null}) {
 
 
     const { fetchFields, topLevelFields } = useMemo(() => {
@@ -115,7 +115,22 @@ export default function useFormInstanceData(instanceId, taskId, instanceType, fo
 
     const instance = data ? data.result : null;
     const tasks = (data && data.result) ? data.result.tasks : null;
-    const task = (tasks && tasks.length) ? tasks.find(t => t.id === taskId) : null;
+
+    let resolvedTaskId = taskId;
+    let task = null;
+
+    if(tasks && tasks.length) {
+        if(taskId) {
+            task = tasks.find(t => t.id === taskId);
+        } else if(taskName) {
+            const customTaskName = `custom:${taskName}`;
+            task = tasks.find(t => t.formKey === taskName || t.formKey === customTaskName);
+        }
+    }
+
+    if(task) {
+        resolvedTaskId = task.id;
+    }
 
     return {
         fetchFields,
@@ -127,6 +142,7 @@ export default function useFormInstanceData(instanceId, taskId, instanceType, fo
 
         instance,
         task,
+        resolvedTaskId,
 
         submitTaskOutcome,
         formData,
