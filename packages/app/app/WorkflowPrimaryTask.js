@@ -2,11 +2,6 @@ import React, { useContext } from 'react'
 import { WorkflowDescriptionContext } from 'client-workflow-model'
 import { TaskForm } from 'component-task-form/client'
 
-import SetupWorkflowAwardsUI from 'component-workflow-awards-ui/client/setup';
-
-// Register Awards specific UI components
-SetupWorkflowAwardsUI();
-
 
 function WorkflowPrimaryTask({ match, history }) {
 
@@ -20,10 +15,6 @@ function WorkflowPrimaryTask({ match, history }) {
 
     const formDefinition = instanceType.formDefinitionForFormName(taskName);
 
-    console.dir(WorkflowDescription);
-    console.dir(instanceType);
-    console.dir(formDefinition);
-
     const wasSubmitted = () => {
         history.push("/");
     };
@@ -34,8 +25,8 @@ function WorkflowPrimaryTask({ match, history }) {
             <br />
             <br />
             <TaskForm instanceId={instanceId} instanceType={instanceType} taskId={taskId}
-                      formDefinition={formDefinition} workflowDescription={WorkflowDescription}
-                        wasSubmitted={wasSubmitted}>
+                formDefinition={formDefinition} workflowDescription={WorkflowDescription}
+                wasSubmitted={wasSubmitted}>
             </TaskForm>
         </div>
     );

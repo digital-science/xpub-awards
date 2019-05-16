@@ -4,11 +4,6 @@ import { taskFormForFormDefinition } from 'component-task-form/client'
 import ModalOverlay from 'component-overlay';
 
 
-// Register Awards specific UI components
-import SetupWorkflowAwardsUI from 'component-workflow-awards-ui/client/setup';
-SetupWorkflowAwardsUI();
-
-
 function WorkflowTaskFormModal({ match, history }) {
 
     const { instanceId, taskId, taskName, type } = match.params;
