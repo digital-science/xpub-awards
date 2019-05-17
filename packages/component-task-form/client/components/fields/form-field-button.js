@@ -3,11 +3,11 @@ import Button from 'ds-awards-theme/components/button';
 import withFormField from './withFormField';
 
 
-function FormFieldButton({submitTaskOutcome, options}) {
+function FormFieldButton({taskId, submitTaskOutcome, options}) {
 
     function handleSubmit(taskOutcome) {
         if(submitTaskOutcome && taskOutcome) {
-            return submitTaskOutcome(taskOutcome, options);
+            return submitTaskOutcome(taskId, taskOutcome, options);
         }
     }
 

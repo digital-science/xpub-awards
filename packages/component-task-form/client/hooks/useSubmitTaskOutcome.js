@@ -1,11 +1,11 @@
 import useCompleteInstanceTask from './../mutations/completeInstanceTask';
 
 
-export default  function useSubmitTaskOutcome(instanceId, taskId, formDefinition, instanceType, wasSubmitted) {
+export default  function useSubmitTaskOutcome(instanceId, formDefinition, instanceType, wasSubmitted) {
 
     const completeInstanceTask = useCompleteInstanceTask(instanceType);
 
-    return (outcomeType, options) => {
+    return (taskId, outcomeType, options) => {
 
         console.log("------");
         console.log("Submit task outcome: ");

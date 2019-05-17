@@ -123,7 +123,7 @@ function MultipleStageTaskForm({instanceId, taskId, taskName, instanceType, form
 
                     const clickStageButton = () => {
                         if(options && options.outcome) {
-                            return submitTaskOutcome(options.outcome, options);
+                            return submitTaskOutcome(resolvedTaskId, options.outcome, options);
                         }
                     };
 

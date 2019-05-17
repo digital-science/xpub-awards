@@ -24,7 +24,7 @@ import debounce from "lodash/debounce";
 
 
 export default function useFormInstanceData({instanceId, taskId, taskName, instanceType, formDefinition, workflowDescription, wasSubmitted,
-                                             enableAutoSave=true, displayIsSavingMessage=null, removeIsSavingMessage=null}) {
+    enableAutoSave=true, displayIsSavingMessage=null, removeIsSavingMessage=null}) {
 
 
     const { fetchFields, topLevelFields } = useMemo(() => {
@@ -33,7 +33,7 @@ export default function useFormInstanceData({instanceId, taskId, taskName, insta
 
     const { data, error, loading, refetch } = useGetInstanceQuery(instanceId, instanceType, fetchFields);
 
-    const submitTaskOutcome = useSubmitTaskOutcome(instanceId, taskId, formDefinition, instanceType, wasSubmitted);
+    const submitTaskOutcome = useSubmitTaskOutcome(instanceId, formDefinition, instanceType, wasSubmitted);
     const updateInstance = useUpdateInstance(instanceType);
 
     const [formData, setFormData] = useState(null);
