@@ -57,7 +57,6 @@ const values = {
         API_ENDPOINT: '/api',
         baseUrl: process.env.CLIENT_BASE_URL || 'http://localhost:3000',
         'login-redirect': '/',
-        'redux-log': process.env.NODE_ENV !== 'production',
         theme: process.env.PUBSWEET_THEME
     },
     orcid: {
@@ -86,7 +85,7 @@ const values = {
         validations: path.resolve(__dirname, 'upload-validations.js')
     },
     mailer: {
-        from: 'hindawi@thinslices.com',
+        from: 'j.watts@digital-science.com',
         path: `${__dirname}/mailer`
     },
     SES: {
@@ -105,6 +104,16 @@ const values = {
         accessKeyId: process.env.AWS_S3_ACCESS_KEY,
         region: process.env.AWS_S3_REGION,
         bucket: process.env.AWS_S3_BUCKET
+    },
+    'workflow-send-email' : {
+        from: 'jaredwatts@gmail.com',
+        prefix: '[DEV] ',
+        templateDirectory: `${__dirname}/../../../definitions/email-templates`,
+        restrictedEmailAddresses: [
+            'j.watts@digital-science.com',
+            's.porter@digital-science.com',
+            't.kuznetsova@digital-science.com'
+        ]
     }
 };
 
