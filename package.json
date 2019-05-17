@@ -34,7 +34,7 @@
     "preserver": "yarn migrate",
     "prestart": "yarn migrate",
     "server": "cd packages/app && yarn server",
-    "start": "cd packages/app && yarn start",
+    "start": "cd packages/app && node app.js",
     "-start": "docker-compose up",
     "start:all": "concurrently \"yarn start:services\" \"yarn server\"",
     "start:services": "cd packages/app && yarn start:services",
