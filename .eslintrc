@@ -9,8 +9,10 @@
     "indent": ["error", 4, {
       "FunctionDeclaration": {"parameters": "first"},
       "CallExpression": {"arguments": "first"},
-      "FunctionExpression": {"parameters": "first"}
+      "FunctionExpression": {"parameters": "first"},
+      "ObjectExpression": "first"
     }],
+    "react/jsx-indent-props": [4, "first"],
     "consistent-return": 0,
     "global-require": 0,
     "jsx-a11y/anchor-is-valid": 0,

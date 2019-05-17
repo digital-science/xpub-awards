@@ -1,9 +1,12 @@
 import React, { Fragment, useMemo, useContext } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { FaQuestionCircle } from 'react-icons/fa'
 
 import { WorkflowDescriptionContext } from 'client-workflow-model'
 import { TaskForm } from 'component-task-form/client';
+
+import InlineTaskFormPopoverTrigger from 'component-task-form/client/components/inline-popover-task-form';
 
 
 const AwardeeListingHolder = styled.ol`
@@ -26,7 +29,7 @@ const AwardeeListingHolder = styled.ol`
 
 
 
-const AwardeeListing = ({submission, awardees, awardeeAcceptances}) => {
+const AwardeeListing = ({submission, awardees, awardeeAcceptances, refreshDashboard}) => {
 
     const awardeeListing = useMemo(() => {
 
@@ -59,7 +62,7 @@ const AwardeeListing = ({submission, awardees, awardeeAcceptances}) => {
     return (
         <AwardeeListingHolder>
             {awardeeListing ? awardeeListing.map(a => {
-                return <AwardeeListingElement key={a.awardee.id} submission={submission} {...a} />
+                return <AwardeeListingElement key={a.awardee.id} submission={submission} refreshDashboard={refreshDashboard} {...a} />
             }) : null}
         </AwardeeListingHolder>
     );
@@ -68,7 +71,7 @@ const AwardeeListing = ({submission, awardees, awardeeAcceptances}) => {
 
 
 
-const AwardeeListingElement = styled(({className=null, submission, awardee, acceptance}) => {
+const AwardeeListingElement = styled(({className=null, submission, awardee, acceptance, refreshDashboard}) => {
 
     const isPending = (acceptance && acceptance.acceptanceOutcome === null);
     const hasAccepted = (acceptance && acceptance.acceptanceOutcome === "Accepted");
@@ -77,10 +80,36 @@ const AwardeeListingElement = styled(({className=null, submission, awardee, acce
     const acceptanceTask = (acceptance && acceptance.tasks && acceptance.tasks.find(task => task.formKey === 'custom:acceptance'));
     const confirmTask = (acceptance && acceptance.tasks && acceptance.tasks.find(task => task.formKey === 'custom:confirm-awardee'));
 
+    const WorkflowDescription = useContext(WorkflowDescriptionContext);
+    const taskFormParameters = useMemo(() => {
+
+        if(!awardee || !acceptance || !confirmTask) {
+            return null;
+        }
+
+        const instanceType = WorkflowDescription.findInstanceTypeForUrlName('awardee-acceptance');
+        const formDefinition = instanceType.formDefinitionForFormName('confirm-awardee');
+
+        const wasSubmitted = () => {
+            refreshDashboard();
+        };
+
+        return {
+            instanceId: acceptance.id,
+            instanceType,
+            taskId: confirmTask ? confirmTask.id : null,
+            formDefinition: formDefinition,
+            workflowDescription: WorkflowDescription,
+            wasSubmitted
+        };
+
+    }, [awardee, acceptance, confirmTask]);
+
+
     const LinkWrapper = ({children}) => {
         if(acceptanceTask) {
             return (
-                <Link to={`/task/awardee-acceptance/${acceptance.id}/${acceptanceTask.formKey.replace(/^custom:/ig, "")}/${acceptanceTask.id}`}>
+                <Link to={`/award/${acceptance.id}/${acceptanceTask.formKey.replace(/^custom:/ig, "")}`}>
                     {children}
                 </Link>
             );
@@ -88,39 +117,21 @@ const AwardeeListingElement = styled(({className=null, submission, awardee, acce
 
         if(confirmTask) {
             return (
-                <Link to={`/task/awardee-acceptance/${acceptance.id}/${confirmTask.formKey.replace(/^custom:/ig, "")}/${confirmTask.id}`}>
+                <InlineTaskFormPopoverTrigger {...taskFormParameters}>
                     {children}
-                </Link>
+                </InlineTaskFormPopoverTrigger>
             );
+            /*<Link to={`/task/awardee-acceptance/${acceptance.id}/${confirmTask.formKey.replace(/^custom:/ig, "")}/${confirmTask.id}`}>
+                </Link>*/
         }
 
         return <Fragment>{children}</Fragment>;
     };
 
-    const WorkflowDescription = useContext(WorkflowDescriptionContext);
-    /*const confirmAwardeeOverlay = useMemo(() => {
-
-        if(!awardee || !acceptance || !confirmTask) {
-            return;
-        }
-
-        const instanceType = WorkflowDescription.findInstanceTypeForUrlName('awardee-acceptance');
-        const formDefinition = instanceType.formDefinitionForFormName('confirm-awardee');
-
-        const wasSubmitted = () => { console.log("inline form was submitted"); };
-
-        return (
-            <div>
-                <TaskForm instanceId={acceptance.id} instanceType={instanceType} taskId={confirmTask.id}
-                    formDefinition={formDefinition} workflowDescription={WorkflowDescription}
-                    wasSubmitted={wasSubmitted}/>
-            </div>
-        );
-
-    }, [awardee, acceptance, confirmTask]);*/
+    const hasInlineTask = !!confirmTask;
 
     return (
-        <li className={`${className || ''} ${hasAccepted ? 'accepted' : ''} ${isPending ? 'pending' : ''} ${submissionPhase ? 'submission' : ''}`}>
+        <li className={`${className || ''} ${hasAccepted ? 'accepted' : ''} ${isPending ? 'pending' : ''} ${submissionPhase ? 'submission' : ''} ${hasInlineTask ? 'task' : ''}`}>
             <LinkWrapper>
                 <AwardAcceptanceDetails className="acceptance-details" awardee={awardee} acceptance={acceptance} hasAccepted={hasAccepted} />
 
@@ -129,7 +140,7 @@ const AwardeeListingElement = styled(({className=null, submission, awardee, acce
                 {awardee.identity && awardee.identity.identityId ?
                     <img alt="ORCID logo" className="orcid" src="https://orcid.org/sites/default/files/images/orcid_16x16.png" hspace="4" /> : null}
 
-                {/*confirmAwardeeOverlay*/}
+                {hasInlineTask ? <FaQuestionCircle /> : null}
 
             </LinkWrapper>
         </li>
@@ -168,6 +179,20 @@ const AwardeeListingElement = styled(({className=null, submission, awardee, acce
     
     &.submission {
         color: #777777;
+    }
+    
+    &.task {
+        color: #757575;
+        background: aliceblue;
+        padding: 3px 4px;
+        border-radius: 6px;
+        border: 1px dashed #9dcef9;
+        cursor: pointer;
+    }
+    
+    &.task svg {
+      color: #9dcef9;
+      vertical-align: top;
     }
 `;
 

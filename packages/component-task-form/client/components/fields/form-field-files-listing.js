@@ -52,6 +52,10 @@ const SimpleFileListing = styled(({className, files}) => {
     
     margin-top: 5px;
     
+    > li {
+        margin-bottom: 5px;
+    }
+    
     > li > div {
       display: inline-block;
       padding: 5px 5px;

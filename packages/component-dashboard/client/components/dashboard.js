@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import moment from 'moment';
@@ -10,6 +10,9 @@ import useGetAwardSubmissions from './../queries/getAwardSubmissions';
 
 import AwardeeListing from './awardee-listing';
 import Spinner from 'ds-awards-theme/components/spinner';
+
+import InlineTaskFormPopoverTrigger from 'component-task-form/client/components/inline-popover-task-form';
+
 
 import './dashboard.css';
 
@@ -27,7 +30,7 @@ const AssignNewButton = styled.button`
     line-height: 30px;
     border: none;
     background: none;
-    font-family: NovcentoSansWideNormal;
+    font-family: NovcentoSansWideNormal, sans-serif;
     text-transform: uppercase;
     
     > span {
@@ -39,7 +42,7 @@ const AssignNewButton = styled.button`
 
 const ActiveAwardsHeader = styled.div`
     font-size: 17px;
-    font-family: NovcentoSansWideBook;
+    font-family: NovcentoSansWideBook, sans-serif;
     text-transform: uppercase;
 `;
 
@@ -53,7 +56,7 @@ const DashboardTable = styled.table`
     border-spacing: 0;
     border-collapse: collapse;
     
-    font-family: QuicksandRegular;
+    font-family: QuicksandRegular, sans-serif;
 
     tbody:before {
         content: "-";
@@ -107,8 +110,6 @@ function Dashboard(props) {
 
     const taskDefinition = workflowDescription.findInstanceType(testing_TaskID);
 
-    console.dir(workflowDescription);
-
 
     function handleCreateNewTask() {
         createNewTask().then(data => {
@@ -116,8 +117,6 @@ function Dashboard(props) {
             if(id && tasks && tasks.length) {
 
                 const tasksWithForms = taskDefinition.primaryTasksFromTaskList(tasks);
-                console.dir(tasksWithForms);
-
                 if(tasksWithForms && tasksWithForms.length) {
                     const primaryTask = tasksWithForms[0];
                     history.push(createTaskUrl(id, primaryTask.formKey.replace(/custom:/gi, ""), primaryTask.id));
@@ -127,7 +126,12 @@ function Dashboard(props) {
     }
 
 
-    const { data, error, loading } = useGetAwardSubmissions(true);
+    const { data, error, loading, refetch } = useGetAwardSubmissions(true);
+
+    const refreshDashboard = () => {
+        return refetch();
+    };
+
 
     return (
         <DashboardHolder>
@@ -165,7 +169,8 @@ function Dashboard(props) {
                     {
                         data.submissions ?
                             data.submissions.map(submission =>
-                                <ActiveAwardSubmissionTableRow submission={submission} workflowDescription={workflowDescription} key={submission.id} />
+                                <ActiveAwardSubmissionTableRow submission={submission} workflowDescription={workflowDescription}
+                                    key={submission.id} refreshDashboard={refreshDashboard} />
                             ) : null
                     }
                 </tbody>
@@ -197,7 +202,7 @@ const SubmissionRow = styled.tr`
 const SubmissionStatusPill = styled.div`
     display: inline-block;
     color: white;
-    font-family: SFCompactDisplayRegular;
+    font-family: SFCompactDisplayRegular, sans-serif;
     text-transform: uppercase;
     font-size: 12px;
     background-color: #98cff1;
@@ -264,14 +269,33 @@ const DeleteIcon = styled(({className}) => {
 `;
 
 const PublishIcon = styled(({className}) => {
-    return <img alt="publish award" className={className} src="/images/publish-award.svg" />;
+    return (
+        <div className={className}>
+            <img alt="publish award"  src="/images/publish-award.svg" />
+        </div>
+    );
 })`
-    height: 20px;
-    display: inline;
+    display: inline-block;
     margin-right: 5px;
+    position: relative;
+    background: aliceblue;
+    padding: 5px;
+    border-radius: 30px;
+    border: 1px dashed #9dcef9;
+    margin-left: -5px;
+    padding-bottom: 4px;
+    cursor: pointer;
+    
+    > img {
+        height: 20px;
+    }
+    
 `;
 
 
+
+// FIXME: the determinations below need to be sourced from the DSL description of the workflow
+// the entire dashboard will need a configuration that can be loaded
 
 const AwardSubmissionStatusMapping = {
 };
@@ -304,7 +328,7 @@ AwardSubmissionStatusMapping[AwardSubmissionStatus.Decision] = {
 };
 
 
-function ActiveAwardSubmissionTableRow({submission, workflowDescription}) {
+function ActiveAwardSubmissionTableRow({submission, workflowDescription, refreshDashboard}) {
 
     // Determine the current status to apply to the submission.
     const { tasks, awardeeAcceptances } = submission;
@@ -342,10 +366,34 @@ function ActiveAwardSubmissionTableRow({submission, workflowDescription}) {
         </Link>
     ) : null;
 
-    const decisionTaskButton = decisionTask ? (
-        <Link to={`/task/award-submission/${submission.id}/${decisionTask.formKey.replace(/^custom:/ig, "")}/${decisionTask.id}`} >
+
+    const decisionTaskFormParameters = useMemo(() => {
+
+        if(!submission || !decisionTask) {
+            return null;
+        }
+
+        const instanceType = workflowDescription.findInstanceTypeForUrlName('award-submission');
+        const formDefinition = instanceType.formDefinitionForFormName('final-decision');
+
+        return {
+            instanceId: submission.id,
+            instanceType,
+            taskId: decisionTask.id ,
+            formDefinition: formDefinition,
+            workflowDescription: workflowDescription,
+            wasSubmitted: () => {
+                refreshDashboard();
+            }
+        };
+
+    }, [submission, decisionTask]);
+
+
+    const decisionTaskButton = (decisionTask && decisionTaskFormParameters) ? (
+        <InlineTaskFormPopoverTrigger {...decisionTaskFormParameters}>
             <PublishIcon />
-        </Link>
+        </InlineTaskFormPopoverTrigger>
     ) : null;
 
 
@@ -362,7 +410,7 @@ function ActiveAwardSubmissionTableRow({submission, workflowDescription}) {
                 <SubmissionStatusPill className={status.className}>{status.text}</SubmissionStatusPill>
             </td>
             <td>
-                <AwardeeListing submission={submission} awardees={submission.awardees} awardeeAcceptances={submission.awardeeAcceptances} />
+                <AwardeeListing submission={submission} awardees={submission.awardees} awardeeAcceptances={submission.awardeeAcceptances} refreshDashboard={refreshDashboard} />
             </td>
             <td className="small actions">
                 {decisionTaskButton}
