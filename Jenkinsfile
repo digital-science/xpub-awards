@@ -4,10 +4,11 @@ properties([
 
         string(defaultValue: '', description: 'Host to deploy the built Docker image onto.', name: 'DeploymentServer'),
         string(defaultValue: '', description: 'Port mapping on the deployment server to deploy from.', name: 'DeploymentPort'),
+        string(defaultValue: 'development', description: 'Environment being deployed onto.', name: 'DeploymentEnvironment'),
 
         string(defaultValue: '', description: 'Host to deploy the built Docker image onto.', name: 'EnvFileLocation'),
 
-        string(defaultValue: '', description: 'ECR Host to publish Docker image onto', name: 'ECRHost'),
+        string(defaultValue: '', description: 'ECR Host to publish Docker image onto', name: 'ECRUri'),
         string(defaultValue: 'ec2-user', description: 'ECR Host to publish Docker image onto', name: 'DockerRunUser'),
 
         string(defaultValue: 'xpub-awards-camunda', description: 'Camunda Workflow Engine docker container name for linking', name: 'LinkedWorkflowEngine'),
@@ -30,7 +31,7 @@ node {
 
     def DEPLOYMENT_SERVER = "${params.DeploymentServer}"
     def DEPLOYMENT_PORT = "${params.DeploymentPort}"
-    def CONFIG_LOCATION_SOURCE
+    def DEPLOYMENT_ENV = "${params.DeploymentEnvironment}"
 
     def DOCKER_CONTAINER_ENV
     def DOCKER_RUN_EXTRA_CURRENT = "--link ${params.LinkedPostgres}:postgres --link ${params.LinkedWorkflowEngine}:workflow"
@@ -45,9 +46,8 @@ node {
         def scmVars = checkout scm
         GIT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 
-        DOCKER_CONTAINER_ENV=scmVars.GIT_LOCAL_BRANCH
-        BUILD_NAME=scmVars.GIT_LOCAL_BRANCH
-        println BUILD_NAME
+        DOCKER_CONTAINER_ENV=DEPLOYMENT_ENV
+        BUILD_NAME=DEPLOYMENT_ENV
 
         if (BUILD_NAME == 'development') {
             DOCKER_FILE_NAME = "./Dockerfile-development"
@@ -58,11 +58,11 @@ node {
 
     stage('Build image') {
 
-        app = docker.build("${DOCKER_IMAGE_NAME}", ". ${DOCKER_FILE_NAME}")
+        app = docker.build("${DOCKER_IMAGE_NAME}", "-f ${DOCKER_FILE_NAME} .")
     }
 
     stage('Push image') {
-        docker.withRegistry("https://${params.ECRHost}") {
+        docker.withRegistry("${params.ECRUri}") {
             app.push("${BUILD_NAME}-${env.BUILD_NUMBER}")
             app.push("${GIT_COMMIT}")
             app.push("${DOCKER_CONTAINER_ENV}-latest")
