@@ -37,6 +37,8 @@ const AssignNewButton = styled.button`
     font-family: NovcentoSansWideNormal, sans-serif;
     text-transform: uppercase;
     
+    cursor: pointer;
+
     > span {
         display: inline-block;
         font-size: 30px;
