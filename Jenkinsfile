@@ -22,7 +22,7 @@ node {
     def GIT_COMMIT
     def BUILD_NAME
 
-    def DOCKER_FILE_NAME = "."
+    def DOCKER_FILE_NAME = "Dockerfile"
     def DOCKER_IMAGE_NAME = "${params.DockerImageName}"
     def DOCKER_CONTAINER_NAME_PREFIX = DOCKER_IMAGE_NAME
     def DOCKER_CONTAINER_NAME
@@ -47,6 +47,7 @@ node {
 
         DOCKER_CONTAINER_ENV=scmVars.GIT_LOCAL_BRANCH
         BUILD_NAME=scmVars.GIT_LOCAL_BRANCH
+        println BUILD_NAME
 
         if (BUILD_NAME == 'development') {
             DOCKER_FILE_NAME = "./Dockerfile-development"
@@ -57,7 +58,7 @@ node {
 
     stage('Build image') {
 
-        app = docker.build("${DOCKER_IMAGE_NAME}", "${DOCKER_FILE_NAME}")
+        app = docker.build("${DOCKER_IMAGE_NAME}", ". ${DOCKER_FILE_NAME}")
     }
 
     stage('Push image') {
