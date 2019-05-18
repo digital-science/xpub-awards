@@ -23,6 +23,8 @@ RUN apk --no-cache add --virtual native-deps \
   yarn cache clean && \
   apk del native-deps
 
+RUN yarn dsl-compile && yarn desc
+
 WORKDIR ${HOME}/packages/app
 ENV NODE_ENV "production"
 
