@@ -9,6 +9,7 @@ COPY .babelrc .eslintignore .eslintrc .stylelintignore .stylelintrc ./
 COPY definitions definitions
 COPY dsl dsl
 COPY packages packages
+COPY scripts scripts
 
 ENV NODE_ENV "development"
 

@@ -9,6 +9,7 @@ COPY .babelrc .eslintignore .eslintrc .stylelintignore .stylelintrc ./
 COPY definitions definitions
 COPY dsl dsl
 COPY packages packages
+COPY scripts scripts
 
 ENV NODE_ENV "development"
 
@@ -22,7 +23,9 @@ RUN apk --no-cache add --virtual native-deps \
   yarn cache clean && \
   apk del native-deps
 
-WORKDIR ${HOME}/packages/app
+RUN yarn dsl-compile && yarn desc
+
+WORKDIR ${HOME}
 ENV NODE_ENV "development"
 
 EXPOSE 3000
