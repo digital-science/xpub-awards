@@ -35,7 +35,6 @@ node {
     def DOCKER_CONTAINER_NAME
     def DOCKER_CONTAINER_ENV
 
-
     stage ('Clean') {
         deleteDir()
     }
