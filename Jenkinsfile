@@ -41,10 +41,10 @@ node {
 
     stage('Clone repository') {
 
-        checkout scm
+        def scmVars = checkout scm
         GIT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 
-        DOCKER_CONTAINER_ENV=BRANCH_NAME
+        DOCKER_CONTAINER_ENV=scmVars.GIT_LOCAL_BRANCH
 
         if (BRANCH_NAME == 'development') {
             DOCKER_FILE_NAME = "./Dockerfile-development"

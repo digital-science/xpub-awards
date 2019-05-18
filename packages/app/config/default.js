@@ -94,7 +94,7 @@ const values = {
         region: process.env.AWS_SES_REGION
     },
     workflow: {
-        apiUri: 'http://127.0.0.1:8080/engine-rest',
+        apiUri: process.env.WORKFLOW_API_URI || 'http://127.0.0.1:8080/engine-rest',
         deploymentName: 'award-submission',
         deploymentFilesSource: './definitions',
         deploymentFiles: ['award-submission.bpmn']
