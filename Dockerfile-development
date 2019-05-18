@@ -16,6 +16,7 @@ RUN [ "yarn", "config", "set", "workspaces-experimental", "true" ]
 
 RUN apk --no-cache add --virtual native-deps \
   g++ gcc libgcc libstdc++ linux-headers make python && \
+  npm config set unsafe-perm true && \
   npm install --quiet node-gyp -g &&\
   yarn install --frozen-lockfile && \
   yarn cache clean && \
