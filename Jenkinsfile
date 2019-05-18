@@ -8,7 +8,6 @@ properties([
         string(defaultValue: '/home/ec2-user/config/xpub-awards-dev/env_file', description: 'Host to deploy the built Docker image onto.', name: 'EnvFileLocation'),
 
         string(defaultValue: '870101719030.dkr.ecr.eu-west-2.amazonaws.com', description: 'ECR Host to publish Docker image onto', name: 'ECRUri'),
-        string(defaultValue: 'ec2-user', description: 'ECR Host to publish Docker image onto', name: 'DockerRunUser'),
 
         string(defaultValue: 'xpub-awards-camunda', description: 'Camunda Workflow Engine docker container name for linking', name: 'LinkedWorkflowEngine'),
         string(defaultValue: 'xpub-awards-postgres', description: 'Postgres docker container name for linking', name: 'LinkedPostgres'),
@@ -25,7 +24,6 @@ node {
     def DOCKER_FILE_NAME = "Dockerfile"
     def DOCKER_IMAGE_NAME = "${params.DockerImageName}"
     def DOCKER_CONTAINER_NAME_PREFIX = DOCKER_IMAGE_NAME
-    def DOCKER_RUN_USER = "${params.DockerRunUser}"
 
     def DEPLOYMENT_SERVER = "${params.DeploymentServer}"
     def DEPLOYMENT_PORT = "${params.DeploymentPort}"
@@ -73,7 +71,7 @@ node {
 
                 sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker pull ${params.ECRUri}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
                 sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker ps -q --filter name=\'${DOCKER_CONTAINER_NAME}\' | xargs -r docker stop && docker ps -a -q --filter name=\'${DOCKER_CONTAINER_NAME}\' | xargs -r docker rm'"
-                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker run -d -p 0.0.0.0:${DEPLOYMENT_PORT}:3000/tcp -u `id -u ${DOCKER_RUN_USER}` --restart=always -e ENVIRONMENT=\'${DOCKER_CONTAINER_ENV}\' ${DOCKER_RUN_EXTRA_CURRENT} --env-file=\'${params.EnvFileLocation}\' --name \'${DOCKER_CONTAINER_NAME}\' ${params.ECRUri}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
+                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker run -d -p 0.0.0.0:${DEPLOYMENT_PORT}:3000/tcp --restart=always -e ENVIRONMENT=\'${DOCKER_CONTAINER_ENV}\' ${DOCKER_RUN_EXTRA_CURRENT} --env-file=\'${params.EnvFileLocation}\' --name \'${DOCKER_CONTAINER_NAME}\' ${params.ECRUri}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
             }
         }
     }
