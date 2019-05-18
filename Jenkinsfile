@@ -7,7 +7,7 @@ properties([
 
         string(defaultValue: '/home/ec2-user/config/xpub-awards-dev/env_file', description: 'Host to deploy the built Docker image onto.', name: 'EnvFileLocation'),
 
-        string(defaultValue: '870101719030.dkr.ecr.eu-west-2.amazonaws.com/xpub-awards', description: 'ECR Host to publish Docker image onto', name: 'ECRUri'),
+        string(defaultValue: '870101719030.dkr.ecr.eu-west-2.amazonaws.com', description: 'ECR Host to publish Docker image onto', name: 'ECRUri'),
         string(defaultValue: 'ec2-user', description: 'ECR Host to publish Docker image onto', name: 'DockerRunUser'),
 
         string(defaultValue: 'xpub-awards-camunda', description: 'Camunda Workflow Engine docker container name for linking', name: 'LinkedWorkflowEngine'),
