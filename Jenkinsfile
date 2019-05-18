@@ -2,13 +2,12 @@ properties([
     parameters([
         string(defaultValue: 'xpub-awards', description: 'Host to deploy the built Docker image onto.', name: 'DockerImageName'),
 
-        string(defaultValue: '', description: 'Host to deploy the built Docker image onto.', name: 'DeploymentServer'),
-        string(defaultValue: '', description: 'Port mapping on the deployment server to deploy from.', name: 'DeploymentPort'),
-        string(defaultValue: 'development', description: 'Environment being deployed onto.', name: 'DeploymentEnvironment'),
+        string(defaultValue: '172.31.5.24', description: 'Host to deploy the built Docker image onto.', name: 'DeploymentServer'),
+        string(defaultValue: '6000', description: 'Port mapping on the deployment server to deploy from.', name: 'DeploymentPort'),
 
-        string(defaultValue: '', description: 'Host to deploy the built Docker image onto.', name: 'EnvFileLocation'),
+        string(defaultValue: '/home/ec2-user/config/xpub-awards-dev/env_file', description: 'Host to deploy the built Docker image onto.', name: 'EnvFileLocation'),
 
-        string(defaultValue: '', description: 'ECR Host to publish Docker image onto', name: 'ECRUri'),
+        string(defaultValue: '870101719030.dkr.ecr.eu-west-2.amazonaws.com/xpub-awards', description: 'ECR Host to publish Docker image onto', name: 'ECRUri'),
         string(defaultValue: 'ec2-user', description: 'ECR Host to publish Docker image onto', name: 'DockerRunUser'),
 
         string(defaultValue: 'xpub-awards-camunda', description: 'Camunda Workflow Engine docker container name for linking', name: 'LinkedWorkflowEngine'),
@@ -24,17 +23,17 @@ node {
     def BUILD_NAME
 
     def DOCKER_FILE_NAME = "Dockerfile"
-    def DOCKER_IMAGE_NAME = "${env.DockerImageName}"
+    def DOCKER_IMAGE_NAME = "${params.DockerImageName}"
     def DOCKER_CONTAINER_NAME_PREFIX = DOCKER_IMAGE_NAME
+    def DOCKER_RUN_USER = "${params.DockerRunUser}"
+
+    def DEPLOYMENT_SERVER = "${params.DeploymentServer}"
+    def DEPLOYMENT_PORT = "${params.DeploymentPort}"
+
+    def DOCKER_RUN_EXTRA_CURRENT = "--link ${params.LinkedPostgres}:postgres --link ${params.LinkedWorkflowEngine}:workflow"
+
     def DOCKER_CONTAINER_NAME
-    def DOCKER_RUN_USER = "${env.DockerRunUser}"
-
-    def DEPLOYMENT_SERVER = "${env.DeploymentServer}"
-    def DEPLOYMENT_PORT = "${env.DeploymentPort}"
-    def DEPLOYMENT_ENV = "${env.DeploymentEnvironment}"
-
     def DOCKER_CONTAINER_ENV
-    def DOCKER_RUN_EXTRA_CURRENT = "--link ${env.LinkedPostgres}:postgres --link ${env.LinkedWorkflowEngine}:workflow"
 
 
     stage ('Clean') {
@@ -46,8 +45,8 @@ node {
         def scmVars = checkout scm
         GIT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 
-        DOCKER_CONTAINER_ENV=DEPLOYMENT_ENV
-        BUILD_NAME=DEPLOYMENT_ENV
+        DOCKER_CONTAINER_ENV=BRANCH_NAME
+        BUILD_NAME=BRANCH_NAME
 
         if (BUILD_NAME == 'development') {
             DOCKER_FILE_NAME = "./Dockerfile-development"
@@ -62,7 +61,7 @@ node {
     }
 
     stage('Push image') {
-        docker.withRegistry("https://${env.ECRUri}") {
+        docker.withRegistry("https://${params.ECRUri}") {
             app.push("${BUILD_NAME}-${env.BUILD_NUMBER}")
             app.push("${GIT_COMMIT}")
             app.push("${DOCKER_CONTAINER_ENV}-latest")
@@ -73,9 +72,9 @@ node {
         if(DEPLOYMENT_SERVER && DEPLOYMENT_SERVER != "" && DEPLOYMENT_PORT && DEPLOYMENT_PORT != "" && DOCKER_CONTAINER_NAME) {
             withCredentials([sshUserPrivateKey(credentialsId: "${DeploymentSSHCredentials}", usernameVariable: 'sshUsername', keyFileVariable: 'sshKeyFile')]) {
 
-                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker pull ${env.ECRUri}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
+                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker pull ${params.ECRUri}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
                 sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker ps -q --filter name=\'${DOCKER_CONTAINER_NAME}\' | xargs -r docker stop && docker ps -a -q --filter name=\'${DOCKER_CONTAINER_NAME}\' | xargs -r docker rm'"
-                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker run -d -p 0.0.0.0:${DEPLOYMENT_PORT}:3000/tcp -u `id -u ${DOCKER_RUN_USER}` --restart=always -e ENVIRONMENT=\'${DOCKER_CONTAINER_ENV}\' ${DOCKER_RUN_EXTRA_CURRENT} --env-file=\'${env.EnvFileLocation}\' --name \'${DOCKER_CONTAINER_NAME}\' ${env.ECRUri}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
+                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker run -d -p 0.0.0.0:${DEPLOYMENT_PORT}:3000/tcp -u `id -u ${DOCKER_RUN_USER}` --restart=always -e ENVIRONMENT=\'${DOCKER_CONTAINER_ENV}\' ${DOCKER_RUN_EXTRA_CURRENT} --env-file=\'${params.EnvFileLocation}\' --name \'${DOCKER_CONTAINER_NAME}\' ${params.ECRUri}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
             }
         }
     }
