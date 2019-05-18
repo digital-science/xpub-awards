@@ -114,6 +114,10 @@ const values = {
             's.porter@digital-science.com',
             't.kuznetsova@digital-science.com'
         ]
+    },
+    figshare: {
+        apiBaseUrl: process.env.FIGSHARE_API_BASE,
+        apiToken: process.env.FIGSHARE_API_TOKEN
     }
 };
 
@@ -125,4 +129,3 @@ values['orcid-paths'] = {
 };
 
 module.exports = values;
-
