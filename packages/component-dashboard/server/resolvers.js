@@ -13,10 +13,6 @@ module.exports = {
         // FIXME: limiting will need to be applied etc
 
         awardSubmissions: () => {
-
-            console.log("---- awardSubmissions called ----");
-            //console.dir(arguments);
-
             return AwardSubmission.query().where('outcome', null).eager('[awardeeAcceptances]');
         }
     }
