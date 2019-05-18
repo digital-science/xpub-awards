@@ -35,7 +35,7 @@ module.exports = [
                 root: path.join(__dirname, '..', '_build'),
             }),
             new HtmlWebpackPlugin({
-                title: 'Hindawi Review',
+                title: 'Digital Science Awards Prototype',
                 buildTime: new Date().toString(),
                 template: '../app/index-production.html',
                 inject: 'body',

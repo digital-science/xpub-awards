@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from 'react-modal';
 import styled from 'styled-components';
 
-import { FaTimes } from 'react-icons/fa';
+import CloseIcon from './../static/close.svg';
 
 
 Modal.setAppElement(document.getElementById('root'));
@@ -47,7 +47,7 @@ function _OverlayHeader({className, heading, hasClose, close}) {
     return (
         <div className={className}>
             {heading ? <span>{heading}</span> : null}
-            {hasClose ? <OverlayCloseButton onClick={close}><img src="/images/close.svg" /></OverlayCloseButton> : null}
+            {hasClose ? <OverlayCloseButton onClick={close}><img alt="close" src={CloseIcon} /></OverlayCloseButton> : null}
         </div>
     )
 }

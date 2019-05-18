@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import PersonIcon from 'ds-awards-theme/static/person.svg';
+
 
 export default styled(({className, awardee}) => {
 
@@ -22,7 +24,7 @@ export default styled(({className, awardee}) => {
 
 
 const AwardeePersonIcon = styled(({className}) => {
-    return <div className={className}><img src="/images/person.svg" /></div>;
+    return <div className={className}><img src={PersonIcon} /></div>;
 })`
     display: inline-block;
     width: 12px;

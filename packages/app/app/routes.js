@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
-import { Router, Route, Switch } from 'react-router';
+import React from 'react';
+import { Route, Switch } from 'react-router';
 
 import AwardsApps from './AwardsApp';
 import Index from './Index';

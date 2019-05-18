@@ -13,6 +13,10 @@ import Spinner from 'ds-awards-theme/components/spinner';
 
 import InlineTaskFormPopoverTrigger from 'component-task-form/client/components/inline-popover-task-form';
 
+import AwardIconImage from 'ds-awards-theme/static/award.svg';
+import PublishAwardIconImage from './../static/publish-award.svg';
+import EditIconImage from './../static/edit.svg';
+import BinIconImage from './../static/bin.svg';
 
 import './dashboard.css';
 
@@ -247,13 +251,13 @@ const AwardDetailsColumn = styled.td`
 const AwardIcon = () => {
     return (
         <AwardIconHolder>
-            <img alt="award" src="/images/award.svg" />
+            <img alt="award" src={AwardIconImage} />
         </AwardIconHolder>
     );
 };
 
 const EditIcon = styled(({className}) => {
-    return <img alt="edit award" className={className} src="/images/edit.svg" />;
+    return <img alt="edit award" className={className} src={EditIconImage} />;
 })`
     height: 20px;
     display: inline;
@@ -261,7 +265,7 @@ const EditIcon = styled(({className}) => {
 `;
 
 const DeleteIcon = styled(({className}) => {
-    return <img alt="delete award" className={className} src="/images/bin.svg" />;
+    return <img alt="delete award" className={className} src={BinIconImage} />;
 })`
     height: 20px;
     display: inline;
@@ -271,7 +275,7 @@ const DeleteIcon = styled(({className}) => {
 const PublishIcon = styled(({className}) => {
     return (
         <div className={className}>
-            <img alt="publish award"  src="/images/publish-award.svg" />
+            <img alt="publish award"  src={PublishAwardIconImage} />
         </div>
     );
 })`
@@ -421,165 +425,5 @@ function ActiveAwardSubmissionTableRow({submission, workflowDescription, refresh
     );
 }
 
-
-
-
-
-
-
-
-
-/***/
-/* Old UI implementation below */
-/***/
-
-/*
-function AwardSubmissionListing( {submissions, workflowDescription} ) {
-
-    if(!submissions.length) {
-        return <div>No Active Award Submissions</div>;
-    }
-
-    return (
-        <ol className="submission-listing">
-            {
-                submissions.map(submission => {
-                    return (
-                        <li key={submission.id}>
-                            <AwardSubmissionRow submission={submission} workflowDescription={workflowDescription} />
-                        </li>
-                    );
-                })
-            }
-        </ol>
-    );
-}
-
-
-function AwardSubmissionRow( {submission, workflowDescription} ) {
-
-    console.dir(submission);
-
-    const { awardees = [], awardeeAcceptances = [] } = submission;
-    let awardeesListing;
-
-    if(awardees.length) {
-
-        awardeesListing = (
-            <ol className="awardees-listing">
-                {
-                    awardees.map(awardee => {
-                        return (
-                            <li key={awardee.id}>
-                                {awardee.firstName} {awardee.lastName}{awardee.affiliation ? <span> &ndash; {awardee.affiliation}</span> : null}
-                            </li>
-                        );
-                    })
-                }
-            </ol>);
-
-    } else {
-        awardeesListing = <div>No Awardees</div>;
-    }
-
-
-    let tasksListing = null;
-
-    if(submission.tasks && submission.tasks.length) {
-        tasksListing = submission.tasks.map(task => {
-
-            const niceFormKey = task.formKey.replace(/^custom:/ig, "");
-
-            return (
-                <tr key={task.id}>
-                    <td>
-                        Task: <Link to={`/task/award-submission/${submission.id}/${niceFormKey}/${task.id}`} >{niceFormKey}</Link>
-                    </td>
-                </tr>
-            );
-        });
-    }
-
-
-    let awardAcceptancesListing = null;
-
-    if(submission.awardeeAcceptances && submission.awardeeAcceptances.length) {
-
-        awardAcceptancesListing = submission.awardeeAcceptances.map(acceptance => {
-
-            //acceptanceOutcome
-            //publishingOutcome
-            //tasks
-
-            const awardee = acceptance.awardee;
-
-            return (
-                <tr key={acceptance.id}>
-                    <td>{awardee.firstName} {awardee.lastName}</td>
-                    <td>{acceptance.acceptanceOutcome || "Pending"}</td>
-                    <td>{acceptance.publishingOutcome || <span>&ndash;</span> }</td>
-                    <td>
-                        {
-                            acceptance.tasks ? (
-                                <ol>
-                                    {
-                                        acceptance.tasks.map(task => {
-                                            const niceFormKey = task.formKey.replace(/^custom:/ig, "");
-                                            return (
-                                                <li key={task.id}>
-                                                    <Link to={`/task/awardee-acceptance/${acceptance.id}/${niceFormKey}/${task.id}`} >{niceFormKey}</Link>
-                                                </li>
-                                            );
-                                        })
-                                    }
-                                </ol>
-                            ) : null
-                        }
-                    </td>
-                </tr>
-            );
-
-        });
-    }
-
-    return (
-        <div>
-            <b>{submission.id}</b>
-            {tasksListing ? (
-                <div>
-                    <table className="task-listing">
-                        <thead>
-                            <tr>
-                                <th>Award Tasks</th>
-                            </tr>
-                        </thead>
-                        <tbody>{tasksListing}</tbody>
-                    </table>
-                </div>
-            ) : null}
-
-            {awardeesListing}
-
-            {
-                awardAcceptancesListing ? (
-                    <div>
-                        <table className="task-listing">
-                            <thead>
-                                <tr>
-                                    <th>Awardee</th>
-                                    <th>Acceptance</th>
-                                    <th>Publishing</th>
-                                    <th>Tasks</th>
-                                </tr>
-                            </thead>
-                            <tbody>{awardAcceptancesListing}</tbody>
-                        </table>
-                    </div>
-                ) : null
-            }
-        </div>
-    );
-}
-*/
 
 export default Dashboard;

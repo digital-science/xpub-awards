@@ -1,6 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import PersonIcon from 'ds-awards-theme/static/person.svg';
+
+
 const Header = styled.header`
     min-height: 68px;
     line-height: 68px;
@@ -42,7 +45,7 @@ export default ({hideUser=false}) => {
             Award Submission Portal
             {!hideUser ? (
                 <Person>
-                    <img src="/images/person.svg" />
+                    <img alt="person" src={PersonIcon} />
                     <span>Jared Watts</span>
                 </Person>)
                 : null}

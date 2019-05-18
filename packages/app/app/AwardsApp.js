@@ -3,14 +3,14 @@ import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import styled, { createGlobalStyle } from 'styled-components';
 
+import { GlobalStyle } from 'ds-awards-theme';
+
 import Header from './Header';
 import Footer from './Footer';
 import Sidebar from './Siderbar';
 
 
-import './base.css';
-
-const GlobalStyles = createGlobalStyle`
+const AppGlobalStyles = createGlobalStyle`
   body {
     height: 100vh;
     margin: 0;
@@ -19,9 +19,12 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
+
 const App = ({ children, hideSidebar, hideUser }) => (
     <Fragment>
-        <GlobalStyles />
+        <AppGlobalStyles />
+        <GlobalStyle />
+
         <Header hideUser={hideUser}/>
         <BodyContainer>
             <ContentContainer>{children}</ContentContainer>

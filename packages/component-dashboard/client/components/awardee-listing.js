@@ -1,10 +1,11 @@
 import React, { Fragment, useMemo, useContext } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { FaQuestionCircle } from 'react-icons/fa'
+
+import { FaQuestionCircle } from 'react-icons/fa';
+import PersonIcon from 'ds-awards-theme/static/person.svg';
 
 import { WorkflowDescriptionContext } from 'client-workflow-model'
-import { TaskForm } from 'component-task-form/client';
 
 import InlineTaskFormPopoverTrigger from 'component-task-form/client/components/inline-popover-task-form';
 
@@ -201,7 +202,7 @@ const AwardeeListingElement = styled(({className=null, submission, awardee, acce
 const AwardAcceptanceDetails = styled(({className, acceptance, hasAccepted}) => {
     return (
         <div className={`${className || ''} ${hasAccepted ? 'accepted' : ''}`}>
-            <img alt="person icon" className={hasAccepted ? 'accepted' : 'not-accepted'} src="/images/person.svg" />
+            <img alt="person icon" className={hasAccepted ? 'accepted' : 'not-accepted'} src={PersonIcon} />
         </div>
     );
 })`

@@ -110,7 +110,7 @@ function _publishSubmission(submission) {
 
     const createArticleIdPromise = !submission.figshareArticleId ? FigshareApi.createNewArticle(articleData).then(articleId => {
 
-        submission.figshareArticleId = articleId;
+        submission.figshareArticleId = "" + articleId;
 
         return submission.save().then(() => {
             return articleId;
