@@ -20,6 +20,7 @@ properties([
 node {
     def app
     def GIT_COMMIT
+    def BUILD_NAME
 
     def DOCKER_FILE_NAME = "."
     def DOCKER_IMAGE_NAME = "${params.DockerImageName}"
@@ -45,8 +46,9 @@ node {
         GIT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 
         DOCKER_CONTAINER_ENV=scmVars.GIT_LOCAL_BRANCH
+        BUILD_NAME=scmVars.GIT_LOCAL_BRANCH
 
-        if (BRANCH_NAME == 'development') {
+        if (BUILD_NAME == 'development') {
             DOCKER_FILE_NAME = "./Dockerfile-development"
         }
 
@@ -60,7 +62,7 @@ node {
 
     stage('Push image') {
         docker.withRegistry("https://${params.ECRHost}") {
-            app.push("${BRANCH_NAME}-${env.BUILD_NUMBER}")
+            app.push("${BUILD_NAME}-${env.BUILD_NUMBER}")
             app.push("${GIT_COMMIT}")
             app.push("${DOCKER_CONTAINER_ENV}-latest")
         }
@@ -70,9 +72,9 @@ node {
         if(DEPLOYMENT_SERVER && DEPLOYMENT_SERVER != "" && DEPLOYMENT_PORT && DEPLOYMENT_PORT != "" && DOCKER_CONTAINER_NAME) {
             withCredentials([sshUserPrivateKey(credentialsId: "${params.DeploymentSSHCredentials}", usernameVariable: 'sshUsername', keyFileVariable: 'sshKeyFile')]) {
 
-                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker pull ${params.ECRHost}/${DOCKER_IMAGE_NAME}:${BRANCH_NAME}-${env.BUILD_NUMBER}'"
+                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker pull ${params.ECRHost}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
                 sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker ps -q --filter name=\'${DOCKER_CONTAINER_NAME}\' | xargs -r docker stop && docker ps -a -q --filter name=\'${DOCKER_CONTAINER_NAME}\' | xargs -r docker rm'"
-                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker run -d -p 0.0.0.0:${DEPLOYMENT_PORT}:3000/tcp -u `id -u ${DOCKER_RUN_USER}` --restart=always -e ENVIRONMENT=\'${DOCKER_CONTAINER_ENV}\' ${DOCKER_RUN_EXTRA_CURRENT} --env-file=\'${params.EnvFileLocation}\' --name \'${DOCKER_CONTAINER_NAME}\' ${params.ECRHost}/${DOCKER_IMAGE_NAME}:${BRANCH_NAME}-${env.BUILD_NUMBER}'"
+                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker run -d -p 0.0.0.0:${DEPLOYMENT_PORT}:3000/tcp -u `id -u ${DOCKER_RUN_USER}` --restart=always -e ENVIRONMENT=\'${DOCKER_CONTAINER_ENV}\' ${DOCKER_RUN_EXTRA_CURRENT} --env-file=\'${params.EnvFileLocation}\' --name \'${DOCKER_CONTAINER_NAME}\' ${params.ECRHost}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
             }
         }
     }
