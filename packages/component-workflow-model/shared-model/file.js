@@ -13,6 +13,9 @@ const S3 = new AWS.S3({
 });
 
 
+const StorageTypeExternalS3 = "FileStorageExternalS3";
+
+
 class File extends AwardsBaseModel {
 
     static get tableName() {
@@ -36,6 +39,20 @@ class File extends AwardsBaseModel {
                 confirmed: { type: ['boolean', 'null'] }
             }
         };
+    }
+
+    s3Object(ownerType, ownerId, extraParams={}) {
+
+        if(!this.storageKey) {
+            return null;
+        }
+
+        if(this.storageType !== StorageTypeExternalS3) {
+            return null;
+        }
+
+        const params = {...extraParams, ..._getParametersForFile(ownerType, ownerId, this.storageKey)};
+        return S3.getObject(params);
     }
 }
 
@@ -81,7 +98,7 @@ exports.resolvers = {
                 fileMimeType: mimeType,
                 fileByteSize: fileByteSize,
                 storageKey: fileId,
-                storageType: "FileStorageExternalS3",
+                storageType: StorageTypeExternalS3,
                 confirmed: true
             });
 
