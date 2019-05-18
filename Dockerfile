@@ -5,7 +5,9 @@ ENV HOME "/home/xpub"
 WORKDIR ${HOME}
 
 COPY package.json yarn.lock ./
-COPY lerna.json .babelrc .eslintignore .eslintrc .prettierrc .stylelintignore .stylelintrc ./
+COPY .babelrc .eslintignore .eslintrc .stylelintignore .stylelintrc ./
+COPY definitions definitions
+COPY dsl dsl
 COPY packages packages
 
 ENV NODE_ENV "development"

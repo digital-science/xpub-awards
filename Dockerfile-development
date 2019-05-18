@@ -5,8 +5,12 @@ ENV HOME "/home/xpub"
 WORKDIR ${HOME}
 
 COPY package.json yarn.lock ./
-COPY lerna.json .babelrc .eslintignore .eslintrc .prettierrc .stylelintignore .stylelintrc ./
+COPY .babelrc .eslintignore .eslintrc .stylelintignore .stylelintrc ./
+COPY definitions definitions
+COPY dsl dsl
 COPY packages packages
+
+ENV NODE_ENV "development"
 
 RUN [ "yarn", "config", "set", "workspaces-experimental", "true" ]
 
@@ -17,13 +21,9 @@ RUN apk --no-cache add --virtual native-deps \
   yarn cache clean && \
   apk del native-deps
 
-#RUN [ "yarn", "install", "--frozen-lockfile" ]
-#RUN [ "yarn", "cache", "clean"]
-#RUN [ "rm", "-rf", "/npm-packages-offline-cache"]
-
-ENV NODE_ENV "development"
 WORKDIR ${HOME}/packages/app
+ENV NODE_ENV "development"
 
 EXPOSE 3000
 
-CMD [ "npm", "run", "start" ]
+CMD [ "yarn", "start" ]
