@@ -31,6 +31,7 @@ node {
     def DEPLOYMENT_PORT = "${params.DeploymentPort}"
     def CONFIG_LOCATION_SOURCE
 
+    def DOCKER_CONTAINER_ENV
     def DOCKER_RUN_EXTRA_CURRENT = "--link ${params.LinkedPostgres}:postgres --link ${params.LinkedWorkflowEngine}:workflow"
 
 
@@ -43,8 +44,9 @@ node {
         checkout scm
         GIT_COMMIT = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 
+        DOCKER_CONTAINER_ENV=BRANCH_NAME
+
         if (BRANCH_NAME == 'development') {
-            DOCKER_CONTAINER_ENV = "dev"
             DOCKER_FILE_NAME = "./Dockerfile-development"
         }
 
