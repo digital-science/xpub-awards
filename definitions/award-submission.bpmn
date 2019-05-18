@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_07a0cqa" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.0.1">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_07a0cqa" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.2.3">
   <bpmn:collaboration id="Collaboration_15ux3tb">
     <bpmn:participant id="Participant_18r8mdg" processRef="award-submission" />
     <bpmn:participant id="Participant_Awardee" name="Awardee Acceptance" processRef="awardee-acceptance" />
@@ -9,7 +9,7 @@
       <bpmn:lane id="Lane_1rejfm9">
         <bpmn:flowNodeRef>EndEvent_AwardNotPublished</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_PublishAward</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_PerformPublish</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ServiceTask_PerformPublish</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_FinalOutcome</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_DetailsSubmission</bpmn:flowNodeRef>
@@ -23,8 +23,8 @@
     <bpmn:endEvent id="EndEvent_PublishAward" name="Published Award">
       <bpmn:incoming>SequenceFlow_0dq1bdm</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_0dq1bdm" sourceRef="Task_PerformPublish" targetRef="EndEvent_PublishAward" />
-    <bpmn:sequenceFlow id="SequenceFlow_08jv2yz" sourceRef="ExclusiveGateway_FinalOutcome" targetRef="Task_PerformPublish">
+    <bpmn:sequenceFlow id="SequenceFlow_0dq1bdm" sourceRef="ServiceTask_PerformPublish" targetRef="EndEvent_PublishAward" />
+    <bpmn:sequenceFlow id="SequenceFlow_08jv2yz" sourceRef="ExclusiveGateway_FinalOutcome" targetRef="ServiceTask_PerformPublish">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${outcome == 'publish'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:endEvent id="EndEvent_AwardNotPublished" name="Award Not Published">
@@ -36,7 +36,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_0r85aaj" sourceRef="UserTask_FinalDecision" targetRef="ExclusiveGateway_FinalOutcome" />
     <bpmn:sequenceFlow id="SequenceFlow_1u6nr9s" sourceRef="Task_DetailsSubmission" targetRef="ServiceTask_PrepareAwardeeDetails" />
     <bpmn:sequenceFlow id="SequenceFlow_18qty39" sourceRef="ServiceTask_PrepareAwardeeDetails" targetRef="Task_Awardees" />
-    <bpmn:serviceTask id="Task_PerformPublish" name="Publish Award" camunda:type="external" camunda:topic="publish-award">
+    <bpmn:serviceTask id="ServiceTask_PerformPublish" name="Publish Award" camunda:asyncAfter="true" camunda:type="external" camunda:topic="publish-award">
       <bpmn:incoming>SequenceFlow_08jv2yz</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0dq1bdm</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -52,7 +52,7 @@
       <bpmn:incoming>SequenceFlow_1d33ek5</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1u6nr9s</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="UserTask_FinalDecision" name="Final Decision" camunda:formKey="custom:final-decision">
+    <bpmn:userTask id="UserTask_FinalDecision" name="Final Decision" camunda:asyncAfter="true" camunda:formKey="custom:final-decision">
       <bpmn:incoming>SequenceFlow_0h86vyq</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0r85aaj</bpmn:outgoing>
     </bpmn:userTask>
@@ -89,7 +89,7 @@
     <bpmn:startEvent id="StartEvent_1uo3bh7">
       <bpmn:outgoing>SequenceFlow_0siid3u</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:serviceTask id="ServiceTask_EmailAwardee" name="Email Awardee" camunda:type="external" camunda:topic="email-awardee">
+    <bpmn:serviceTask id="ServiceTask_EmailAwardee" name="Email Awardee" camunda:asyncAfter="true" camunda:type="external" camunda:topic="email-awardee">
       <bpmn:incoming>SequenceFlow_0siid3u</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0r7xx3o</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -151,7 +151,7 @@
         <di:waypoint x="1135" y="221" />
         <di:waypoint x="1212" y="221" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_11cquwf_di" bpmnElement="Task_PerformPublish">
+      <bpmndi:BPMNShape id="ServiceTask_11cquwf_di" bpmnElement="ServiceTask_PerformPublish">
         <dc:Bounds x="1035" y="181" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Participant_09vvcjy_di" bpmnElement="Participant_Awardee">

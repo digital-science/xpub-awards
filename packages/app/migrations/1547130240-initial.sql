@@ -1,9 +1,9 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+
 --
 -- Common Shared Data Model for awards
 --
-
 
 CREATE TABLE "identity" (
     "id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -66,7 +66,9 @@ CREATE TABLE "award-submission" (
     "citation" text,
     "date" timestamp,
     "award_type" text,
-    "outcome" text
+    "outcome" text,
+
+    "figshare_article_id" text
 );
 
 

@@ -25,7 +25,9 @@ task AwardSubmission {
         awardees: [Awardee] <set>,
         files: [File] <set>,
 
-        awardeeAcceptances: [AwardeeAcceptance] <join-to-field:"awardSubmissionId">
+        awardeeAcceptances: [AwardeeAcceptance] <join-to-field:"awardSubmissionId">,
+
+        figshareArticleId: String
     }
 
     form "submission" extend "MulitpleStages" {
