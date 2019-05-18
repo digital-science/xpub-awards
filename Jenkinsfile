@@ -1,11 +1,11 @@
 properties([
     parameters([
-        string(defaultValue: 'xpub-awards-prototype', description: 'Host to deploy the built Docker image onto.' name: 'DockerImageName'),
+        string(defaultValue: 'xpub-awards-prototype', description: 'Host to deploy the built Docker image onto.', name: 'DockerImageName'),
 
-        string(defaultValue: '', description: 'Host to deploy the built Docker image onto.' name: 'DeploymentServer'),
-        string(defaultValue: '', description: 'Port mapping on the deployment server to deploy from.' name: 'DeploymentPort'),
+        string(defaultValue: '', description: 'Host to deploy the built Docker image onto.', name: 'DeploymentServer'),
+        string(defaultValue: '', description: 'Port mapping on the deployment server to deploy from.', name: 'DeploymentPort'),
 
-        string(defaultValue: '', description: 'Host to deploy the built Docker image onto.' name: 'EnvFileLocation'),
+        string(defaultValue: '', description: 'Host to deploy the built Docker image onto.', name: 'EnvFileLocation'),
 
         string(defaultValue: '', description: 'ECR Host to publish Docker image onto', name: 'ECRHost'),
         string(defaultValue: 'ec2-user', description: 'ECR Host to publish Docker image onto', name: 'DockerRunUser'),
