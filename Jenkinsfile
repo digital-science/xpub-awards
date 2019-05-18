@@ -24,17 +24,17 @@ node {
     def BUILD_NAME
 
     def DOCKER_FILE_NAME = "Dockerfile"
-    def DOCKER_IMAGE_NAME = "${DockerImageName}"
+    def DOCKER_IMAGE_NAME = "${env.DockerImageName}"
     def DOCKER_CONTAINER_NAME_PREFIX = DOCKER_IMAGE_NAME
     def DOCKER_CONTAINER_NAME
-    def DOCKER_RUN_USER = "${DockerRunUser}"
+    def DOCKER_RUN_USER = "${env.DockerRunUser}"
 
-    def DEPLOYMENT_SERVER = "${DeploymentServer}"
-    def DEPLOYMENT_PORT = "${DeploymentPort}"
-    def DEPLOYMENT_ENV = "${DeploymentEnvironment}"
+    def DEPLOYMENT_SERVER = "${env.DeploymentServer}"
+    def DEPLOYMENT_PORT = "${env.DeploymentPort}"
+    def DEPLOYMENT_ENV = "${env.DeploymentEnvironment}"
 
     def DOCKER_CONTAINER_ENV
-    def DOCKER_RUN_EXTRA_CURRENT = "--link ${LinkedPostgres}:postgres --link ${LinkedWorkflowEngine}:workflow"
+    def DOCKER_RUN_EXTRA_CURRENT = "--link ${env.LinkedPostgres}:postgres --link ${env.LinkedWorkflowEngine}:workflow"
 
 
     stage ('Clean') {
@@ -62,7 +62,7 @@ node {
     }
 
     stage('Push image') {
-        docker.withRegistry("https://${ECRUri}") {
+        docker.withRegistry("https://${env.ECRUri}") {
             app.push("${BUILD_NAME}-${env.BUILD_NUMBER}")
             app.push("${GIT_COMMIT}")
             app.push("${DOCKER_CONTAINER_ENV}-latest")
@@ -73,9 +73,9 @@ node {
         if(DEPLOYMENT_SERVER && DEPLOYMENT_SERVER != "" && DEPLOYMENT_PORT && DEPLOYMENT_PORT != "" && DOCKER_CONTAINER_NAME) {
             withCredentials([sshUserPrivateKey(credentialsId: "${DeploymentSSHCredentials}", usernameVariable: 'sshUsername', keyFileVariable: 'sshKeyFile')]) {
 
-                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker pull ${ECRUri}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
+                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker pull ${env.ECRUri}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
                 sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker ps -q --filter name=\'${DOCKER_CONTAINER_NAME}\' | xargs -r docker stop && docker ps -a -q --filter name=\'${DOCKER_CONTAINER_NAME}\' | xargs -r docker rm'"
-                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker run -d -p 0.0.0.0:${DEPLOYMENT_PORT}:3000/tcp -u `id -u ${DOCKER_RUN_USER}` --restart=always -e ENVIRONMENT=\'${DOCKER_CONTAINER_ENV}\' ${DOCKER_RUN_EXTRA_CURRENT} --env-file=\'${EnvFileLocation}\' --name \'${DOCKER_CONTAINER_NAME}\' ${ECRUri}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
+                sh "ssh -i ${sshKeyFile} ${sshUsername}@${DEPLOYMENT_SERVER} 'docker run -d -p 0.0.0.0:${DEPLOYMENT_PORT}:3000/tcp -u `id -u ${DOCKER_RUN_USER}` --restart=always -e ENVIRONMENT=\'${DOCKER_CONTAINER_ENV}\' ${DOCKER_RUN_EXTRA_CURRENT} --env-file=\'${env.EnvFileLocation}\' --name \'${DOCKER_CONTAINER_NAME}\' ${env.ECRUri}/${DOCKER_IMAGE_NAME}:${BUILD_NAME}-${env.BUILD_NUMBER}'"
             }
         }
     }
