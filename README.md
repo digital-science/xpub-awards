@@ -19,6 +19,10 @@ Coko Foundation:<br />
 
 Detailed instructions regarding how to setup and play around with what we've done to date will be written up soon.
 
+## Screenshots
+
+![](https://digital-science.github.io/xpub-awards/dashboard.png)
+
 ## Contact
 
 Please feel free to contact Jared Watts (j.watts@digital-science.com) about this project.

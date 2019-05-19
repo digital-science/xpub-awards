@@ -142,7 +142,7 @@ function Dashboard(props) {
     return (
         <DashboardHolder>
 
-            <ActiveAwardsHeader>Active Awardes Submissions</ActiveAwardsHeader>
+            <ActiveAwardsHeader>Active Award Submissions</ActiveAwardsHeader>
 
             <DashboardTable>
                 <thead>
