@@ -1,4 +1,5 @@
 const Request = require('request');
+const logger = require('@pubsweet/logger');
 
 const FigshareApiEndpoints = {
 
@@ -142,16 +143,19 @@ class FigshareApi {
 
         return new Promise(function(resolve, reject) {
 
-            Request(options, function(err, response, body) {
+            Request(options, function(err, response, responseBody) {
                 if(err) {
                     return reject(err);
                 }
 
                 if(response.statusCode >= 400) {
+                    logger.debug(`[figshare-publish-service] FigshareAPI request returned an invalid response code ${response.statusCode} for request [${method || "GET"} -> ${endpoint}]
+                        \trequest-body: ${body ? JSON.stringify(body, null, 4) : "<none>"}
+                        \tresponse-body: ${responseBody ? JSON.stringify(responseBody, null, 4) : "<none>"}`);
                     return reject(new Error(`Invalid response code (${response.statusCode}) returned from figshare API endpoint`));
                 }
 
-                return resolve(body);
+                return resolve(responseBody);
             });
         });
     };

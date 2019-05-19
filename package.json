@@ -20,7 +20,6 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-react": "^7.12.0",
     "eslint-plugin-standard": "^4.0.0",
-    "generator-hindawi": "*",
     "husky": "^1.3.1",
     "lerna": "^3.10.6",
     "lint-staged": "^8.1.0",
@@ -39,7 +38,6 @@
     "start:all": "concurrently \"yarn start:services\" \"yarn server\"",
     "start:services": "cd packages/app && yarn start:services",
     "test": "lerna run test",
-    "yo": "yo hindawi",
     "dsl-compile": "pegjs -o dsl/wfd-dsl.js dsl/wfd-dsl.pegjs",
     "desc": "node dsl/compile.js definitions/award-submission.wfd packages/app/config/description.json"
   },

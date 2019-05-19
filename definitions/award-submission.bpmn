@@ -89,11 +89,11 @@
     <bpmn:startEvent id="StartEvent_1uo3bh7">
       <bpmn:outgoing>SequenceFlow_0siid3u</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:serviceTask id="ServiceTask_EmailAwardee" name="Email Awardee" camunda:asyncAfter="true" camunda:type="external" camunda:topic="email-awardee">
+    <bpmn:serviceTask id="ServiceTask_EmailAwardee" name="Email Awardee" camunda:type="external" camunda:topic="email-awardee">
       <bpmn:incoming>SequenceFlow_0siid3u</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0r7xx3o</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:userTask id="UserTask_AwardeeAcceptance" name="Awardee Acceptance" camunda:formKey="custom:acceptance">
+    <bpmn:userTask id="UserTask_AwardeeAcceptance" name="Awardee Acceptance" camunda:asyncAfter="true" camunda:formKey="custom:acceptance">
       <bpmn:incoming>SequenceFlow_0r7xx3o</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_19j4xac</bpmn:outgoing>
     </bpmn:userTask>

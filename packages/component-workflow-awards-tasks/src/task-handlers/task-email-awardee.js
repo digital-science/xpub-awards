@@ -66,6 +66,10 @@ module.exports = function _setupEmailAwardeeTask(client) {
 
             logger.debug(`${LogPrefix} email to awardee was sent, completing external task`);
             return taskService.complete(task);
+
+        }).catch(err => {
+
+            logger.error(`${LogPrefix} unable to send acceptance email to awardee due to: ${err.toString()}`);
         });
 
         // FIXME: record sending an email etc. in a communication log associated with the submission??

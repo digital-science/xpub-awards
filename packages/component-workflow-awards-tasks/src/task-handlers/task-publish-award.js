@@ -4,6 +4,9 @@ const { AwardSubmission } = models;
 const { FigshareApi } = require('figshare-publish-service');
 const crypto = require('crypto');
 
+const logger = require("@pubsweet/logger");
+const LogPrefix = '[ExternalTask/PublishAward]';
+
 
 module.exports = function _setupPublishAwardTask(client) {
 
@@ -16,20 +19,34 @@ module.exports = function _setupPublishAwardTask(client) {
 
         const instanceId = task.businessKey;
         if(!instanceId) {
-            // FIXME: may need to fail task here and report it
-            logger.error(`External Task (publish-award): failed to process for submission due to missing business key (processInstanceId="${task.processInstanceId}")`);
-            return;
+            logger.error(`${LogPrefix} failed to process for submission due to missing business key (processInstanceId="${task.processInstanceId}")`);
+            return taskService.handleFailure(task, {
+                errorMessage: "Publish Award Failed",
+                errorDetails: `Publish award task had no valid business key associated with the external service task.`,
+                retries: 0,
+                retryTimeout: 0
+            });
         }
 
         const submission = await AwardSubmission.find(instanceId, ['files', 'awardees.identity']);
         if(!submission) {
-            logger.warn(`External Task (publish-award): unable to find award submission instance for id (${instanceId})`);
+            logger.warn(`${LogPrefix} unable to find award submission instance for id (${instanceId})`);
             return;
         }
 
         _publishSubmission(submission).then(() => {
 
             return taskService.complete(task);
+
+        }).catch(err => {
+
+            logger.error(`${LogPrefix} failed due to error: ${err.toString()}`);
+            /*return taskService.handleFailure(task, {
+                errorMessage: "Publish Award Failed",
+                errorDetails: `Unable to publish award due to: ${err.toString()}`,
+                retries: 5,
+                retryTimeout: 5000
+            });*/
         });
     });
 };
